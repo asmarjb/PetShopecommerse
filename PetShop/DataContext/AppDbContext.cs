@@ -19,6 +19,8 @@ namespace PetShop.DataContext
         public DbSet<ProductAnimalType> ProductAnimalTypes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Cart> Carts { get; set; } = null!;
+        public DbSet<CartItem> CartItems { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -90,6 +92,30 @@ namespace PetShop.DataContext
 
             modelBuilder.Entity<ProductVariant>()
                 .Property(v => v.PriceModifier)
+                .HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Cart>()
+    .HasIndex(c => c.SessionId);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.ProductVariant)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CartItem>()
+                .Property(ci => ci.UnitPriceSnapshot)
                 .HasColumnType("decimal(18,2)");
 
             // ================= SEED DATA =================
@@ -199,6 +225,7 @@ namespace PetShop.DataContext
                 new ProductImage { Id = 3, ProductId = 3, ImageUrl = "/images/products/pedigree-puppy.jpg", IsMain = true },
                 new ProductImage { Id = 4, ProductId = 4, ImageUrl = "/images/products/dog-jacket.jpg", IsMain = true }
             );
+
         }
     }
 }
