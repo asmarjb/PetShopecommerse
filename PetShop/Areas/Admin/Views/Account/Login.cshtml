@@ -1,0 +1,102 @@
+@model PetShop.Areas.Admin.Models.LoginViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Admin Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] | adminHMD</title>
+    <link rel="stylesheet" href="~/admin/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/admin/assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/admin/assets/css/style.css">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bs-body-bg, #f8f9fa);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            background: #fff;
+        }
+        .auth-brand  { font-size: 1.5rem; font-weight: 700; }
+        .auth-title  { font-size: 1.15rem; font-weight: 600; margin-bottom: .25rem; }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="text-center mb-4">
+            <span class="auth-brand text-success">
+                <i class="bi bi-grid-1x2-fill me-1"></i>adminHMD
+            </span>
+            <h1 class="auth-title mt-3">Sign in to your account</h1>
+            <p class="text-muted small">Enter your admin credentials to continue.</p>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+        <form method="post" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-semibold">Email address</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="admin@example.com" autocomplete="email" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" class="form-control" placeholder="••••••••" autocomplete="current-password" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4 d-flex align-items-center justify-content-between">
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label small">Remember me</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 fw-semibold">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+            </button>
+        </form>
+
+        <hr class="my-4">
+        <p class="text-center text-muted small mb-0">
+            No account yet?
+            <a asp-action="Register" class="fw-semibold text-success text-decoration-none">Register here</a>
+        </p>
+    </div>
+</div>
+
+<script src="~/admin/assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

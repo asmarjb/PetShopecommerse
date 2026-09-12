@@ -1,0 +1,105 @@
+@model PetShop.Areas.Admin.Models.RegisterViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Admin Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] | adminHMD</title>
+    <link rel="stylesheet" href="~/admin/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/admin/assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/admin/assets/css/style.css">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bs-body-bg, #f8f9fa);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            padding: 2.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            background: #fff;
+        }
+        .auth-brand  { font-size: 1.5rem; font-weight: 700; }
+        .auth-title  { font-size: 1.15rem; font-weight: 600; margin-bottom: .25rem; }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="text-center mb-4">
+            <span class="auth-brand text-success">
+                <i class="bi bi-grid-1x2-fill me-1"></i>adminHMD
+            </span>
+            <h1 class="auth-title mt-3">Create an admin account</h1>
+            <p class="text-muted small">Fill in the form below to register a new admin user.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+        <form method="post" asp-action="Register" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input asp-for="FullName" class="form-control" placeholder="John Doe" autocomplete="name" />
+                </div>
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-semibold">Email address</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="admin@example.com" autocomplete="email" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" class="form-control" placeholder="Min. 6 characters" autocomplete="new-password" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat password" autocomplete="new-password" />
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 fw-semibold">
+                <i class="bi bi-person-plus me-1"></i> Create Account
+            </button>
+        </form>
+
+        <hr class="my-4">
+        <p class="text-center text-muted small mb-0">
+            Already have an account?
+            <a asp-action="Login" class="fw-semibold text-success text-decoration-none">Sign in</a>
+        </p>
+    </div>
+</div>
+
+<script src="~/admin/assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

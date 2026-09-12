@@ -1,0 +1,71 @@
+@model IEnumerable<PetShop.DataContext.Entites.BlogPost>
+@{
+    ViewData["Title"] = "Blog - Tips & Updates";
+}
+
+<div class="my-5 py-3">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4 fw-normal">Blog & Articles</h1>
+                <p class="text-muted">Our latest articles on pet care, nutrition, and helpful tips.</p>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row entry-container">
+                @foreach (var post in Model)
+                {
+                    var blogImg = string.IsNullOrEmpty(post.ImageUrl)
+                        ? "/images/blog1.jpg"
+                        : (post.ImageUrl.StartsWith("/") ? post.ImageUrl : $"/images/{post.ImageUrl}");
+
+                    <div class="entry-item col-md-6 col-lg-4 my-4">
+                        <div class="card position-relative h-100 d-flex flex-column border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 py-1 bg-white bg-opacity-90 shadow-sm">
+                                <h4 class="secondary-font text-primary m-0 fw-bold">@post.PublishedAt.Day</h4>
+                                <p class="secondary-font fs-6 m-0 text-muted">@post.PublishedAt.ToString("MMM")</p>
+                            </div>
+
+                            <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug" class="d-block overflow-hidden" style="aspect-ratio: 16 / 10; background: #FAF7F2;">
+                                <img src="@blogImg" class="img-fluid w-100 h-100 object-fit-cover" alt="@post.Title"
+                                     onerror="this.onerror=null;this.src='/images/blog1.jpg';">
+                            </a>
+
+                            <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                                <div class="d-flex align-items-center gap-3 text-muted small mb-2">
+                                    <span><iconify-icon icon="la:user" class="me-1"></iconify-icon>@(string.IsNullOrEmpty(post.Author) ? "PetShop" : post.Author)</span>
+                                    <span><iconify-icon icon="la:calendar" class="me-1"></iconify-icon>@post.PublishedAt.ToString("dd.MM.yyyy")</span>
+                                </div>
+
+                                <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug" class="text-decoration-none text-dark">
+                                    <h4 class="card-title fw-semibold mb-3">@post.Title</h4>
+                                </a>
+
+                                <p class="blog-paragraph text-muted fs-6 mb-4 flex-grow-1">
+                                    @(post.Summary?.Length > 120 ? post.Summary.Substring(0, 117) + "..." : post.Summary)
+                                </p>
+
+                                <div class="mt-auto">
+                                    <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug" class="blog-read text-primary fw-semibold text-uppercase text-decoration-none">
+                                        Read More &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 my-5">
+                <iconify-icon icon="solar:document-outline" class="display-1 text-muted mb-3"></iconify-icon>
+                <h3 class="fw-normal">No articles published yet</h3>
+                <p class="text-muted">New and interesting articles will be published here soon.</p>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-1 px-4 py-2 mt-2">Back to Home</a>
+            </div>
+        }
+    </div>
+</div>

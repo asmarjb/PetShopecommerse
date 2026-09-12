@@ -1,4 +1,4 @@
-﻿@{
+@{
     HomeViewModel model = Model;
     var products = model.Products;
     var categories = model.Categories;
@@ -15,7 +15,7 @@
                         <div class="img-wrapper col-md-5">
                             <img src="~/images/banner-img.png" class="img-fluid">
                         </div>
-                        <div class="content-wrapper col-md-7 p-5 mb-5">
+                        <div class="content-wrapper col-md-7 p-4 p-lg-5">
                             <div class="secondary-font text-primary text-uppercase mb-4">Save 10 - 20 % off</div>
                             <h2 class="banner-title display-1 fw-normal">
                                 Best destination for <span class="text-primary">
@@ -23,7 +23,7 @@
                                     pets
                                 </span>
                             </h2>
-                            <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                            <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                                 shop now
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                                     <use xlink:href="#arrow-right"></use>
@@ -38,7 +38,7 @@
                         <div class="img-wrapper col-md-5">
                             <img src="~/images/banner-img3.png" class="img-fluid">
                         </div>
-                        <div class="content-wrapper col-md-7 p-5 mb-5">
+                        <div class="content-wrapper col-md-7 p-4 p-lg-5">
                             <div class="secondary-font text-primary text-uppercase mb-4">Save 10 - 20 % off</div>
                             <h2 class="banner-title display-1 fw-normal">
                                 Best destination for <span class="text-primary">
@@ -46,7 +46,7 @@
                                     pets
                                 </span>
                             </h2>
-                            <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                            <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                                 shop now
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                                     <use xlink:href="#arrow-right"></use>
@@ -61,7 +61,7 @@
                         <div class="img-wrapper col-md-5">
                             <img src="~/images/banner-img4.png" class="img-fluid">
                         </div>
-                        <div class="content-wrapper col-md-7 p-5 mb-5">
+                        <div class="content-wrapper col-md-7 p-4 p-lg-5">
                             <div class="secondary-font text-primary text-uppercase mb-4">Save 10 - 20 % off</div>
                             <h2 class="banner-title display-1 fw-normal">
                                 Best destination for <span class="text-primary">
@@ -69,7 +69,7 @@
                                     pets
                                 </span>
                             </h2>
-                            <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                            <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                                 shop now
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                                     <use xlink:href="#arrow-right"></use>
@@ -81,28 +81,41 @@
                 </div>
             </div>
 
-            <div class="swiper-pagination mb-5"></div>
+            <div class="swiper-pagination"></div>
 
         </div>
     </div>
 </section>
 
-<section id="categories">
-    <div class="container my-3 py-5">
-        <div class="row my-5">
-            @foreach (var category in categories)
+<section id="categories" class="py-4">
+    <div class="container">
+        <div class="row justify-content-center my-4 g-3 g-md-4">
+            @foreach (var animal in animalTypes)
             {
+                var icon = animal.Name?.ToLower() switch
+                {
+                    var s when s.Contains("it") || s.Contains("dog") => "ph:dog",
+                    var s when s.Contains("pi") || s.Contains("cat") => "ph:cat",
+                    var s when s.Contains("qu") || s.Contains("bird") => "ph:bird",
+                    var s when s.Contains("bal") || s.Contains("fish") => "ph:fish",
+                    _ => "ph:paw-print"
+                };
+                var displayName = animal.Name?.ToLower() switch
+                {
+                    var s when s.Contains("it") || s.Contains("dog") => "Dog",
+                    var s when s.Contains("pi") || s.Contains("cat") => "Cat",
+                    var s when s.Contains("qu") || s.Contains("bird") => "Bird",
+                    var s when s.Contains("bal") || s.Contains("fish") => "Fish",
+                    _ => animal.Name
+                };
 
-                <div class="col text-center">
-                    <a href="/products/@category.Slug" class="categories-item">
-                        <iconify-icon class="category-icon" icon="@category.IconClass"></iconify-icon>
-                        <h5>@category.Name</h5>
+                <div class="col-6 col-sm-3 col-md-3 text-center">
+                    <a href="/Shop?animalTypeId=@animal.Id" class="categories-item">
+                        <iconify-icon class="category-icon" icon="@icon"></iconify-icon>
+                        <h5 class="mt-3">@displayName</h5>
                     </a>
                 </div>
-
             }
-
-
         </div>
     </div>
 </section>
@@ -112,7 +125,7 @@
         <div class="section-header d-md-flex justify-content-between align-items-center mb-3">
             <h2 class="display-3 fw-normal">Pet Clothing</h2>
             <div>
-                <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                <a href="/products/cloth" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                     shop now
                     <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1"><use xlink:href="#arrow-right"></use></svg>
                 </a>
@@ -122,8 +135,8 @@
             <div class="swiper-wrapper">
                 @foreach (var product in products.Where(p => p.ProductCategory.Slug.StartsWith("cloth")))
                 {
-                    var imageFileName = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl;
-                    var mainImage = string.IsNullOrEmpty(imageFileName) ? "/images/no-image.png" : $"/images/{imageFileName}";
+                    var imageFileName = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl;
+                    var mainImage = string.IsNullOrEmpty(imageFileName) ? "/images/no-image.png" : (imageFileName.StartsWith("/") ? imageFileName : $"/images/{imageFileName}");
 
                     <div class="swiper-slide">
                         @if (product.CreatedAt >= DateTime.UtcNow.AddDays(-14))
@@ -136,13 +149,15 @@
                             <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">-@discountPercent%</div>
                         }
 
-                        <div class="card position-relative">
-                            <a href="/product/@product.Id"><img src="@mainImage" class="img-fluid rounded-4" alt="@product.Name"></a>
-                            <div class="card-body p-0">
+                        <div class="card position-relative h-100 d-flex flex-column">
+                            <a href="/product/@product.Id" class="product-image-container">
+                                <img src="@mainImage" class="img-fluid" alt="@product.Name" onerror="this.onerror=null;this.src='/images/no-image.png';">
+                            </a>
+                            <div class="card-body p-0 d-flex flex-column flex-grow-1">
                                 <a href="/product/@product.Id">
                                     <h3 class="card-title pt-4 m-0">@product.Name</h3>
                                 </a>
-                                <div class="card-text">
+                                <div class="card-text mt-auto">
                                     <span class="rating secondary-font">
                                         @for (int i = 0; i < 5; i++)
                                         {
@@ -150,12 +165,24 @@
                                         }
                                         5.0
                                     </span>
-                                    <h3 class="secondary-font text-primary">@(product.DiscountPrice ?? product.Price) ₼</h3>
+                                    <h3 class="secondary-font text-primary">@(product.DiscountPrice ?? product.Price) &#8380;</h3>
                                     <div class="d-flex flex-wrap mt-3">
-                                        <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3" onclick="AddToBasket(@product.Id); return false;">
-                                            <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                        </a>
-                                        <a href="#" class="btn-wishlist px-4 pt-3">
+                                        @if (product.StockQuantity <= 0)
+                                        {
+                                            <button class="btn btn-secondary me-3 px-4 pt-3 pb-3 disabled rounded-1" disabled>
+                                                <h5 class="text-uppercase m-0">Sold Out</h5>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3" onclick="AddToBasket(@product.Id); return false;">
+                                                <h5 class="text-uppercase m-0">Add to Cart</h5>
+                                            </a>
+                                        }
+                                        <a href="#" class="btn-wishlist px-4 pt-3 @(model.WishlistProductIds.Contains(product.Id) ? "wishlisted" : "")"
+                                           data-product-id="@product.Id"
+                                           onclick="toggleWishlist(this, @product.Id); return false;"
+                                           title="@(model.WishlistProductIds.Contains(product.Id) ? "Remove from wishlist" : "Add to wishlist")">
                                             <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
                                         </a>
                                     </div>
@@ -179,12 +206,21 @@
                     <button class="filter-button me-4  active" data-filter="*">ALL</button>
                     @foreach (var animal in animalTypes)
                     {
-                        <button class="filter-button me-4" data-filter=".@animal.Name.ToLower()">@animal.Name.ToUpper()</button>
+                        var animalFilter = $".animal-{animal.Id}, .{animal.Name.ToLowerInvariant()}, .{animal.Name.ToLower()}";
+                        var aButtonName = animal.Name?.ToLower() switch
+                        {
+                            var s when s.Contains("it") || s.Contains("dog") => "DOG",
+                            var s when s.Contains("pi") || s.Contains("cat") => "CAT",
+                            var s when s.Contains("qu") || s.Contains("bird") => "BIRD",
+                            var s when s.Contains("bal") || s.Contains("fish") => "FISH",
+                            _ => animal.Name?.ToUpper()
+                        };
+                        <button class="filter-button me-4" data-filter="@animalFilter">@aButtonName</button>
                     }
                 </p>
             </div>
             <div>
-                <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                <a href="/products/food" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                     shop now
                     <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1"><use xlink:href="#arrow-right"></use></svg>
                 </a>
@@ -193,29 +229,39 @@
 
         <div class="isotope-container row">
 
-            @foreach (var product in products.Where(p => p.ProductCategory.Slug.StartsWith("food")))
+            @foreach (var product in products.Where(p => p.ProductCategory != null && (p.ProductCategory.Slug.StartsWith("food") || p.ProductCategory.Slug.Contains("yem") || p.ProductCategory.Name.ToLower().Contains("yem"))))
             {
-				var animalClasses = string.Join(" ", product.ProductAnimalTypes.Select(a => a.AnimalType.Name.ToLower()));
-                var imageFileName = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl;
-                var mainImage = string.IsNullOrEmpty(imageFileName) ? "/images/no-image.png" : $"/images/{imageFileName}";
+				var animalClassList = product.ProductAnimalTypes.Select(a => $"animal-{a.AnimalTypeId} {a.AnimalType.Name.ToLowerInvariant()} {a.AnimalType.Name.ToLower()}").ToList();
+                if (!animalClassList.Any())
+                {
+                    if (product.ProductCategory?.Name?.ToLower().Contains("balıq") == true || product.ProductCategory?.Slug?.Contains("fish") == true || product.Name.ToLower().Contains("balıq"))
+                    {
+                        animalClassList.Add("animal-4 balıq baliq");
+                    }
+                }
+                var animalClasses = string.Join(" ", animalClassList);
+                var imageFileName = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl;
+                var mainImage = string.IsNullOrEmpty(imageFileName) ? "/images/no-image.png" : (imageFileName.StartsWith("/") ? imageFileName : $"/images/{imageFileName}");
 
                 <div class="item @animalClasses col-md-4 col-lg-3 my-4">
-                    @if (product.StockQuantity == 0)
-                    {
-                        <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">Sold</div>
-                    }
-                    else if (product.DiscountPrice.HasValue)
-                    {
-                        <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">Sale</div>
-                    }
+                    <div class="card position-relative h-100 d-flex flex-column">
+                        @if (product.StockQuantity == 0)
+                        {
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">Sold</div>
+                        }
+                        else if (product.DiscountPrice.HasValue)
+                        {
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">Sale</div>
+                        }
 
-                    <div class="card position-relative">
-                        <a href="/product/@product.Id"><img src="@mainImage" class="img-fluid rounded-4" alt="@product.Name"></a>
-                        <div class="card-body p-0">
+                        <a href="/product/@product.Id" class="product-image-container">
+                            <img src="@mainImage" class="img-fluid" alt="@product.Name" onerror="this.onerror=null;this.src='/images/no-image.png';">
+                        </a>
+                        <div class="card-body p-0 d-flex flex-column flex-grow-1">
                             <a href="/product/@product.Id">
                                 <h3 class="card-title pt-4 m-0">@product.Name</h3>
                             </a>
-                            <div class="card-text">
+                            <div class="card-text mt-auto">
                                 <span class="rating secondary-font">
                                     @for (int i = 0; i < 5; i++)
                                     {
@@ -223,15 +269,27 @@
                                     }
                                     5.0
                                 </span>
-                                <h3 class="secondary-font text-primary">@(product.DiscountPrice ?? product.Price) ₼</h3>
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3" onclick="AddToBasket(@product.Id); return false;">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
+                                <h3 class="secondary-font text-primary">@(product.DiscountPrice ?? product.Price) &#8380;</h3>
+                                    <div class="d-flex flex-wrap mt-3">
+                                        @if (product.StockQuantity <= 0)
+                                        {
+                                            <button class="btn btn-secondary me-3 px-4 pt-3 pb-3 disabled rounded-1" disabled>
+                                                <h5 class="text-uppercase m-0">Sold Out</h5>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3" onclick="AddToBasket(@product.Id); return false;">
+                                                <h5 class="text-uppercase m-0">Add to Cart</h5>
+                                            </a>
+                                        }
+                                        <a href="#" class="btn-wishlist px-4 pt-3 @(model.WishlistProductIds.Contains(product.Id) ? "wishlisted" : "")"
+                                           data-product-id="@product.Id"
+                                           onclick="toggleWishlist(this, @product.Id); return false;"
+                                           title="@(model.WishlistProductIds.Contains(product.Id) ? "Remove from wishlist" : "Add to wishlist")">
+                                            <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
+                                        </a>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -256,7 +314,7 @@
                 <h2 class="banner-title display-1 fw-normal">
                     Clearance sale !!!
                 </h2>
-                <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                <a asp-controller="Shop" asp-action="Index" asp-route-onlyDiscounted="true" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                     shop now
                     <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                         <use xlink:href="#arrow-right"></use>
@@ -268,77 +326,13 @@
     </div>
 </section>
 
-<section id="testimonial">
-    <div class="container my-5 py-5">
-        <div class="row">
-            <div class="offset-md-1 col-md-10">
-                <div class="swiper testimonial-swiper">
-                    <div class="swiper-wrapper">
-
-                        <div class="swiper-slide">
-                            <div class="row ">
-                                <div class="col-2">
-                                    <iconify-icon icon="ri:double-quotes-l" class="quote-icon text-primary"></iconify-icon>
-                                </div>
-                                <div class="col-md-10 mt-md-5 p-5 pt-0 pt-md-5">
-                                    <p class="testimonial-content fs-2">
-                                        At the core of our practice is the idea that cities are the
-                                        incubators of our
-                                        greatest achievements, and the best hope for a sustainable future.
-                                    </p>
-                                    <p class="text-black">- Joshima Lin</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="row ">
-                                <div class="col-2">
-                                    <iconify-icon icon="ri:double-quotes-l" class="quote-icon text-primary"></iconify-icon>
-                                </div>
-                                <div class="col-md-10 mt-md-5 p-5 pt-0 pt-md-5">
-                                    <p class="testimonial-content fs-2">
-                                        At the core of our practice is the idea that cities are the
-                                        incubators of our
-                                        greatest achievements, and the best hope for a sustainable future.
-                                    </p>
-                                    <p class="text-black">- Joshima Lin</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="row ">
-                                <div class="col-2">
-                                    <iconify-icon icon="ri:double-quotes-l" class="quote-icon text-primary"></iconify-icon>
-                                </div>
-                                <div class="col-md-10 mt-md-5 p-5 pt-0 pt-md-5">
-                                    <p class="testimonial-content fs-2">
-                                        At the core of our practice is the idea that cities are the
-                                        incubators of our
-                                        greatest achievements, and the best hope for a sustainable future.
-                                    </p>
-                                    <p class="text-black">- Joshima Lin</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="swiper-pagination"></div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-</section>
-
 <section id="bestselling" class="my-5 overflow-hidden">
     <div class="container py-5 mb-5">
 
         <div class="section-header d-md-flex justify-content-between align-items-center mb-3">
             <h2 class="display-3 fw-normal">Best selling products</h2>
             <div>
-                <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
                     shop now
                     <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                         <use xlink:href="#arrow-right"></use>
@@ -349,236 +343,68 @@
 
         <div class=" swiper bestselling-swiper">
             <div class="swiper-wrapper">
+                @foreach (var product in products.OrderByDescending(p => p.DiscountPrice.HasValue).ThenByDescending(p => p.CreatedAt).Take(8))
+                {
+                    var imageFileName = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl;
+                    var mainImage = string.IsNullOrEmpty(imageFileName) ? "/images/no-image.png" : (imageFileName.StartsWith("/") ? imageFileName : $"/images/{imageFileName}");
 
-                <div class="swiper-slide">
-                    <!-- <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                      New
-                    </div> -->
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item5.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
+                    <div class="swiper-slide">
+                        @if (product.StockQuantity <= 0)
+                        {
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle bg-light text-muted">Sold</div>
+                        }
+                        else if (product.CreatedAt >= DateTime.UtcNow.AddDays(-14))
+                        {
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">New</div>
+                        }
+                        else if (product.DiscountPrice.HasValue)
+                        {
+                            var discountPercent = Math.Round((1 - (product.DiscountPrice.Value / product.Price)) * 100);
+                            <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">-@discountPercent%</div>
+                        }
+
+                        <div class="card position-relative h-100 d-flex flex-column">
+                            <a href="/product/@product.Id" class="product-image-container">
+                                <img src="@mainImage" class="img-fluid" alt="@product.Name" onerror="this.onerror=null;this.src='/images/no-image.png';">
                             </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
+                            <div class="card-body p-0 d-flex flex-column flex-grow-1">
+                                <a href="/product/@product.Id">
+                                    <h3 class="card-title pt-4 m-0">@product.Name</h3>
+                                </a>
+                                <div class="card-text mt-auto">
+                                    <span class="rating secondary-font">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
+                                        }
+                                        5.0
+                                    </span>
+                                    <h3 class="secondary-font text-primary">@(product.DiscountPrice ?? product.Price) &#8380;</h3>
+                                    <div class="d-flex flex-wrap mt-3">
+                                        @if (product.StockQuantity <= 0)
+                                        {
+                                            <button class="btn btn-secondary me-3 px-4 pt-3 pb-3 disabled rounded-1" disabled>
+                                                <h5 class="text-uppercase m-0">Sold Out</h5>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3" onclick="AddToBasket(@product.Id); return false;">
+                                                <h5 class="text-uppercase m-0">Add to Cart</h5>
+                                            </a>
+                                        }
+                                        <a href="#" class="btn-wishlist px-4 pt-3 @(model.WishlistProductIds.Contains(product.Id) ? "wishlisted" : "")"
+                                           data-product-id="@product.Id"
+                                           onclick="toggleWishlist(this, @product.Id); return false;"
+                                           title="@(model.WishlistProductIds.Contains(product.Id) ? "Remove from wishlist" : "Add to wishlist")">
+                                            <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
+                                        </a>
+                                    </div>
                                 </div>
-
-
                             </div>
-
                         </div>
                     </div>
-                </div>
-                <div class="swiper-slide">
-                    <!-- <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                      New
-                    </div> -->
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item6.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
-                            </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                        Sale
-                    </div>
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item7.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
-                            </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <!-- <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                      New
-                    </div> -->
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item8.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
-                            </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                        -10%
-                    </div>
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item3.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
-                            </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <!-- <div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">
-                      New
-                    </div> -->
-                    <div class="card position-relative">
-                        <a href="single-product.html"><img src="~/images/item4.jpg" class="img-fluid rounded-4" alt="image"></a>
-                        <div class="card-body p-0">
-                            <a href="single-product.html">
-                                <h3 class="card-title pt-4 m-0">Grey hoodie</h3>
-                            </a>
-
-                            <div class="card-text">
-                                <span class="rating secondary-font">
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    <iconify-icon icon="clarity:star-solid" class="text-primary"></iconify-icon>
-                                    5.0
-                                </span>
-
-                                <h3 class="secondary-font text-primary">$18.00</h3>
-
-                                <div class="d-flex flex-wrap mt-3">
-                                    <a href="#" class="btn-cart me-3 px-4 pt-3 pb-3">
-                                        <h5 class="text-uppercase m-0">Add to Cart</h5>
-                                    </a>
-                                    <a href="#" class="btn-wishlist px-4 pt-3 ">
-                                        <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                    </a>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
+                }
             </div>
         </div>
         <!-- / category-carousel -->
@@ -586,49 +412,24 @@
 
     </div>
 </section>
-<script>
 
-    const CartItems= document.getElementById("CartItems");
-    async function AddToBasket(productId) {
-        let response = await fetch(`/Home/AddBasket/${productId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        if (response.ok) {
-            const CartTotalPrice= document.getElementById("CartTotalPrice");
-            document.getElementById("CartItemCount").innerText = data.items.reduce((total, item) => total + (item.count || item.quantity || 1), 0);
-            let data = await response.json();
-            console.log(data)
-            CartTotalPrice.innerHTML = `$${data.totalPrice.toFixed(2)}`;
-            CartItems.innerHTML = '';
-            for (let item of data.items) {
-                    CartItems.innerHTML += `                                                    <li class="product-box-contain">
-                                                            <div class="drop-cart">
-                                                                <a href="product-left-thumbnail.html" class="drop-image">
-                                                                    <img src="/assets/images/vegetable/product/${item.productImagePath}"
-                                                                    class="blur-up lazyload" alt="">
-                                                                </a>
-
-                                                                <div class="drop-contain">
-                                                                    <a href="product-left-thumbnail.html">
-                                                                        <h5>${item.productName}</h5>
-                                                                    </a>
-                                                                    <h6><span> ${item.tota} x</span> ${item.price}</h6>
-                                                                    <button class="close-button close_button">
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-    `;
-            }
-        }
-        else {
-            console.error("Failed to add item to basket");
-        }
-    }
-
-</script>
+<section id="latest-blog" class="my-5">
+    <div class="container py-5 my-5">
+        <div class="row mt-5">
+            <div class="section-header d-md-flex justify-content-between align-items-center mb-3">
+                <h2 class="display-3 fw-normal">Latest Blog Posts</h2>
+                <div>
+                    <a asp-controller="Blog" asp-action="Index" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+                        Read All
+                        <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
+                            <use xlink:href="#arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @await Component.InvokeAsync("LatestBlogs")
+        </div>
+    </div>
+</section>

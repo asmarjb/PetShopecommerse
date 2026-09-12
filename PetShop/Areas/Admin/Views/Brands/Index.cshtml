@@ -1,0 +1,42 @@
+@model IEnumerable<PetShop.DataContext.Entites.Brand>
+@{ ViewData["Title"] = "Brands"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <h1 class="h3 mb-1">Brands</h1>
+            <a asp-action="Create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Add Brand</a>
+        </div>
+
+        <section class="panel mt-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.LogoUrl)) {
+                                    var imgSrc = item.LogoUrl.StartsWith("/") ? item.LogoUrl : $"/images/{item.LogoUrl}";
+                                    <img src="@imgSrc" style="width: 50px; height: 50px; object-fit: cover;" class="rounded" />
+                                }
+                            </td>
+                            <td>@item.Name</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>

@@ -1,0 +1,67 @@
+@model PetShop.Areas.Admin.Controllers.SearchViewModel
+
+<div class="container-fluid px-3 px-lg-4 py-4">
+    <div class="page-heading">
+        <h1 class="h3 mb-1">Search Results for "@Model.Query"</h1>
+    </div>
+
+    @if (string.IsNullOrWhiteSpace(Model.Query))
+    {
+        <div class="alert alert-info">Please enter a search query.</div>
+    }
+    else
+    {
+        if (Model.Orders.Any())
+        {
+            <div class="panel mb-4">
+                <div class="panel-header"><h2 class="h5 mb-0"><i class="bi bi-cart"></i> Orders</h2></div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            @foreach(var o in Model.Orders)
+                            {
+                                <tr>
+                                    <td>#@o.Id</td>
+                                    <td>@o.CustomerName</td>
+                                    <td>$@o.TotalAmount.ToString("N2")</td>
+                                    <td>@o.OrderStatus</td>
+                                    <td><a href="/Admin/Orders/Edit/@o.Id" class="btn btn-sm btn-light">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        if (Model.Products.Any())
+        {
+            <div class="panel mb-4">
+                <div class="panel-header"><h2 class="h5 mb-0"><i class="bi bi-box"></i> Products</h2></div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Category</th><th>Action</th></tr></thead>
+                        <tbody>
+                            @foreach(var p in Model.Products)
+                            {
+                                <tr>
+                                    <td>@p.Name</td>
+                                    <td>@p.Sku</td>
+                                    <td>$@p.Price.ToString("N2")</td>
+                                    <td>@p.ProductCategory?.Name</td>
+                                    <td><a href="/Admin/Products/Edit/@p.Id" class="btn btn-sm btn-light">Edit</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        if (!Model.Orders.Any() && !Model.Products.Any() && !Model.Users.Any())
+        {
+            <div class="alert alert-warning">No results found for "@Model.Query".</div>
+        }
+    }
+</div>

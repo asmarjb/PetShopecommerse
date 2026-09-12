@@ -1,0 +1,129 @@
+@{
+    ViewData["Title"] = "Charts";
+}
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <div class="page-heading-copy">
+                <span class="page-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
+                <div>
+                    <p class="eyebrow mb-1">Analytics</p>
+                    <h1 class="h3 mb-1">Data Charts</h1>
+                    <p class="text-muted mb-0">Visual breakdown of products, categories, and system metrics.</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="row g-4 mt-2">
+            <!-- Products By Category Chart -->
+            <div class="col-12 col-lg-6">
+                <div class="panel h-100">
+                    <div class="panel-header">
+                        <h2 class="h5 mb-0 section-title"><i class="bi bi-pie-chart" aria-hidden="true"></i><span>Products By Category</span></h2>
+                    </div>
+                    <div class="panel-body p-4 d-flex justify-content-center align-items-center" style="min-height: 350px;">
+                        @if (ViewBag.CategoriesLabels != null && ((List<string>)ViewBag.CategoriesLabels).Count > 0)
+                        {
+                            <canvas id="categoryChart"></canvas>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                <p>No category data available to chart.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active vs Inactive Products Chart -->
+            <div class="col-12 col-lg-6">
+                <div class="panel h-100">
+                    <div class="panel-header">
+                        <h2 class="h5 mb-0 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Product Status</span></h2>
+                    </div>
+                    <div class="panel-body p-4 d-flex justify-content-center align-items-center" style="min-height: 350px;">
+                        @if (ViewBag.ActiveProductsCount > 0 || ViewBag.InactiveProductsCount > 0)
+                        {
+                            <canvas id="statusChart"></canvas>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                <p>No product data available to chart.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Category Chart (Doughnut)
+            var categoryLabels = @Html.Raw(Json.Serialize(ViewBag.CategoriesLabels ?? new List<string>()));
+            var categoryData = @Html.Raw(Json.Serialize(ViewBag.CategoriesData ?? new List<int>()));
+
+            if (categoryLabels.length > 0) {
+                var ctxCategory = document.getElementById('categoryChart').getContext('2d');
+                new Chart(ctxCategory, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [{
+                            data: categoryData,
+                            backgroundColor: [
+                                '#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0', '#6f42c1', '#fd7e14'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Status Chart (Pie)
+            var activeCount = @(ViewBag.ActiveProductsCount ?? 0);
+            var inactiveCount = @(ViewBag.InactiveProductsCount ?? 0);
+
+            if (activeCount > 0 || inactiveCount > 0) {
+                var ctxStatus = document.getElementById('statusChart').getContext('2d');
+                new Chart(ctxStatus, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Active Products', 'Inactive Products'],
+                        datasets: [{
+                            data: [activeCount, inactiveCount],
+                            backgroundColor: ['#198754', '#6c757d'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

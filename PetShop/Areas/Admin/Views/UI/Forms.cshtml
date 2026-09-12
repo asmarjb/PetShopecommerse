@@ -1,0 +1,69 @@
+@{ ViewData["Title"] = "Forms"; }
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <div class="page-heading-copy">
+                <span class="page-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
+                <div>
+                    <h1 class="h3 mb-1">Forms Elements</h1>
+                    <p class="text-muted mb-0">Example of form elements, inputs, and validation.</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="row mt-4">
+            <div class="col-12 col-md-6">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="h5 mb-0">Basic Form</h2>
+                    </div>
+                    <div class="panel-body p-4">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Email address</label>
+                                <input type="email" class="form-control" placeholder="name@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 mt-4 mt-md-0">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="h5 mb-0">Input Groups & Select</h2>
+                    </div>
+                    <div class="panel-body p-4">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">@@</span>
+                            <input type="text" class="form-control" placeholder="Username" aria-label="Username">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Option</label>
+                            <select class="form-select">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>

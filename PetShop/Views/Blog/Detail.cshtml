@@ -1,0 +1,87 @@
+@model PetShop.DataContext.Entites.BlogPost
+@{
+    ViewData["Title"] = Model.Title;
+    var recentPosts = ViewBag.RecentPosts as IEnumerable<PetShop.DataContext.Entites.BlogPost>;
+}
+
+<section class="my-5">
+    <div class="container py-5">
+        <div class="row g-5">
+
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Featured Image -->
+                @{
+                    var mainImg = string.IsNullOrEmpty(Model.ImageUrl)
+                        ? "/images/blog1.jpg"
+                        : (Model.ImageUrl.StartsWith("/") ? Model.ImageUrl : $"/images/{Model.ImageUrl}");
+                }
+                <div class="position-relative mb-4">
+                    <div class="z-1 position-absolute rounded-3 m-3 px-3 pt-1 bg-light">
+                        <h3 class="secondary-font text-primary m-0">@Model.PublishedAt.Day</h3>
+                        <p class="secondary-font fs-6 m-0">@Model.PublishedAt.ToString("MMM")</p>
+                    </div>
+                    <img src="@mainImg"
+                         class="img-fluid rounded-4 w-100"
+                         alt="@Model.Title"
+                         style="max-height:440px; object-fit:cover;"
+                         onerror="this.onerror=null;this.src='/images/blog1.jpg';">
+                </div>
+
+                <!-- Meta -->
+                <div class="d-flex align-items-center gap-4 text-muted small mb-4">
+                    <span><iconify-icon icon="la:user" class="me-1"></iconify-icon>@Model.Author</span>
+                    <span><iconify-icon icon="la:calendar" class="me-1"></iconify-icon>@Model.PublishedAt.ToString("dd MMMM yyyy")</span>
+                </div>
+
+                <!-- Title -->
+                <h2 class="fw-semibold mb-4">@Model.Title</h2>
+
+                <!-- Content -->
+                <div class="blog-paragraph fs-6 lh-lg">
+                    @Html.Raw(Model.Content)
+                </div>
+
+                <!-- Back Button -->
+                <div class="mt-5">
+                    <a asp-controller="Blog" asp-action="Index"
+                       class="btn btn-outline-dark rounded-1 px-4">
+                        &larr; Back to Blog
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sticky-top" style="top: 90px;">
+
+                    @if (recentPosts != null && recentPosts.Any())
+                    {
+                        <h4 class="fw-semibold mb-4 border-bottom pb-2">Recent Posts</h4>
+                        @foreach (var recent in recentPosts)
+                        {
+                            var recentImg = string.IsNullOrEmpty(recent.ImageUrl)
+                                ? "/images/blog1.jpg"
+                                : (recent.ImageUrl.StartsWith("/") ? recent.ImageUrl : $"/images/{recent.ImageUrl}");
+
+                            <div class="d-flex gap-3 mb-4 align-items-start">
+                                <img src="@recentImg"
+                                     alt="@recent.Title"
+                                     class="rounded-3 flex-shrink-0"
+                                     style="width:80px; height:70px; object-fit:cover;"
+                                     onerror="this.onerror=null;this.src='/images/blog1.jpg';">
+                                <div>
+                                    <p class="text-muted small mb-1">@recent.PublishedAt.ToString("dd MMM yyyy")</p>
+                                    <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@recent.Slug"
+                                       class="text-dark text-decoration-none fw-semibold small">@recent.Title</a>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

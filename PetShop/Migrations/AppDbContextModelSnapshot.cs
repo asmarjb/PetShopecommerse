@@ -22,6 +22,43 @@ namespace PetShop.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PetShop.DataContext.Entites.AdminUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("AdminUsers");
+                });
+
             modelBuilder.Entity("PetShop.DataContext.Entites.AnimalType", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +104,133 @@ namespace PetShop.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PetShop.DataContext.Entites.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("AppUsers");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.BlogPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("BlogPosts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Author = "Waggy Team",
+                            Content = "At the core of our practice is the idea that cities are the incubators of our greatest achievements, and the best hope for a sustainable future. Animals play a crucial role in maintaining the balance of our ecosystem. By being kind to animals, we not only protect biodiversity but also ensure a healthier planet for future generations.",
+                            ImageUrl = "blog1.jpg",
+                            IsPublished = true,
+                            PublishedAt = new DateTime(2026, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Slug = "10-reasons-helpful-towards-animals",
+                            Summary = "At the core of our practice is the idea that cities are the incubators of our greatest achievements, and the best hope for a sustainable future.",
+                            Title = "10 Reasons to be helpful towards any animals"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Author = "Waggy Team",
+                            Content = "Understanding your pet's hunger cues is essential for their health and wellbeing. Pets communicate their needs in various ways — from pawing at their food bowl to vocalizing. Learn the key signs that indicate your pet needs to be fed and how to establish a healthy feeding routine.",
+                            ImageUrl = "blog2.jpg",
+                            IsPublished = true,
+                            PublishedAt = new DateTime(2026, 2, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Slug = "how-to-know-your-pet-is-hungry",
+                            Summary = "At the core of our practice is the idea that cities are the incubators of our greatest achievements, and the best hope for a sustainable future.",
+                            Title = "How to know your pet is hungry"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "Waggy Team",
+                            Content = "Creating the perfect home environment for your pets is one of the most important things you can do as a pet owner. From choosing the right bedding to setting up safe play areas, a well-designed home keeps your pets happy, healthy, and stress-free.",
+                            ImageUrl = "blog3.jpg",
+                            IsPublished = true,
+                            PublishedAt = new DateTime(2026, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Slug = "best-home-for-your-pets",
+                            Summary = "At the core of our practice is the idea that cities are the incubators of our greatest achievements, and the best hope for a sustainable future.",
+                            Title = "Best home for your pets"
+                        });
+                });
+
             modelBuilder.Entity("PetShop.DataContext.Entites.Brand", b =>
                 {
                     b.Property<int>("Id")
@@ -101,7 +265,249 @@ namespace PetShop.Migrations
                         {
                             Id = 3,
                             Name = "Pedigree"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Butcher's"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Merrick"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Pulsitos"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Love Corn"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Champion Pet"
                         });
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPriceSnapshot")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Coupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DiscountType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MaxDiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("MinimumOrderAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UsageLimit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coupons");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CouponCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("PetShop.DataContext.Entites.Product", b =>
@@ -155,53 +561,222 @@ namespace PetShop.Migrations
                         new
                         {
                             Id = 1,
-                            BrandId = 1,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Böyük yaşlı itlər üçün premium yem",
+                            BrandId = 8,
+                            CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Yumşaq təbii pambıq parçadan hazırlanmış, qulaqlı və isti saxlayan dəbli it kapüşonlusu.",
+                            DiscountPrice = 24.00m,
                             IsActive = true,
-                            Name = "Royal Canin Dog Food 3kg",
-                            Price = 45.99m,
-                            ProductCategoryId = 3,
-                            Sku = "RC-DOG-3KG",
-                            StockQuantity = 100
+                            Name = "Boz Qulaqlı İt Kapüşonlusu",
+                            Price = 28.50m,
+                            ProductCategoryId = 6,
+                            Sku = "CLT-DOG-001",
+                            StockQuantity = 95
                         },
                         new
                         {
                             Id = 2,
-                            BrandId = 2,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Yetişkin pişiklər üçün balıqlı yem",
+                            BrandId = 8,
+                            CreatedAt = new DateTime(2026, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Zolaqlı köynək və dəbli cins kombinezon dəsti, kiçik və orta cins itlər üçün rahat gəzinti geyimi.",
+                            DiscountPrice = 29.99m,
                             IsActive = true,
-                            Name = "Whiskas Cat Food 1.5kg",
-                            Price = 18.50m,
-                            ProductCategoryId = 4,
-                            Sku = "WHI-CAT-1.5KG",
-                            StockQuantity = 150
+                            Name = "Zolaqlı və Cins İt Kombinezonu",
+                            Price = 34.00m,
+                            ProductCategoryId = 6,
+                            Sku = "CLT-DOG-002",
+                            StockQuantity = 145
                         },
                         new
                         {
                             Id = 3,
                             BrandId = 3,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Kiçik cinslər üçün balaca it yemi",
+                            CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Payız və qış fəsilləri üçün elastik, dərini qıcıqlandırmayan və isti saxlayan toxunma sviter.",
+                            DiscountPrice = 19.50m,
                             IsActive = true,
-                            Name = "Pedigree Puppy Food 2kg",
+                            Name = "Çəhrayı-Krem İt Sviteri",
                             Price = 22.00m,
-                            ProductCategoryId = 3,
-                            Sku = "PED-PUP-2KG",
-                            StockQuantity = 80
+                            ProductCategoryId = 6,
+                            Sku = "CLT-DOG-003",
+                            StockQuantity = 77
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Orta ölçülü itlər üçün qış ceketi",
+                            BrandId = 8,
+                            CreatedAt = new DateTime(2026, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Ağ haşiyəli, zərif və rahat düyməli qara ev və ziyafət geyimi.",
+                            DiscountPrice = 32.50m,
                             IsActive = true,
-                            Name = "Dog Winter Jacket M",
-                            Price = 15.99m,
+                            Name = "Qara Zərif İt Kostyumu",
+                            Price = 38.00m,
                             ProductCategoryId = 6,
-                            Sku = "CLT-DOG-M",
-                            StockQuantity = 40
+                            Sku = "CLT-DOG-004",
+                            StockQuantity = 38
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Təbii ağacdan hazırlanmış, içərisində yumşaq döşəyi olan rahat və estetik evcik.",
+                            DiscountPrice = 72.00m,
+                            IsActive = true,
+                            Name = "Təbii Taxta Pişik və İt Yuvası",
+                            Price = 85.00m,
+                            ProductCategoryId = 8,
+                            Sku = "ACC-PET-005",
+                            StockQuantity = 25
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BrandId = 4,
+                            CreatedAt = new DateTime(2026, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Böyük və orta yaşlı itlər üçün super-premium dərəcəli zərif paştet, taxılsız tərkib.",
+                            DiscountPrice = 3.80m,
+                            IsActive = true,
+                            Name = "Butcher's Pro Series Mal və Quş Ətli İt Paşteti",
+                            Price = 4.50m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-006",
+                            StockQuantity = 120
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BrandId = 8,
+                            CreatedAt = new DateTime(2026, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "İdman tərzində, 100% pambıq parçadan hazırlanmış parlaq sarı kapüşonlu svitşot.",
+                            IsActive = true,
+                            Name = "Sarı Champion İt Kapüşonlusu",
+                            Price = 26.00m,
+                            ProductCategoryId = 6,
+                            Sku = "CLT-DOG-007",
+                            StockQuantity = 60
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BrandId = 8,
+                            CreatedAt = new DateTime(2026, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Ev şəraitində tük tökülməsinin qarşısını alan, yüngül və nəfəs alan əyləncəli pijama.",
+                            DiscountPrice = 16.50m,
+                            IsActive = true,
+                            Name = "Banan Naxışlı İt Pijaması",
+                            Price = 19.90m,
+                            ProductCategoryId = 6,
+                            Sku = "CLT-DOG-008",
+                            StockQuantity = 70
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2026, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Nanə tərkibli, nəfəsi təravətləndirən və diş daşlarını təmizləyən ikitərəfli diş fırçası sümükləri.",
+                            IsActive = true,
+                            Name = "Merrick Fresh Kisses Diş Təmizləyici Çubuqlar",
+                            Price = 17.50m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-009",
+                            StockQuantity = 85
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BrandId = 4,
+                            CreatedAt = new DateTime(2026, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Kiçik cins itlər üçün kalsium və fosforla zənginləşdirilmiş zərif quş ətli yaş yem.",
+                            DiscountPrice = 4.20m,
+                            IsActive = true,
+                            Name = "Butcher's Pro Diş və Sümük Qoruyucu İt Paşteti",
+                            Price = 4.80m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-010",
+                            StockQuantity = 110
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BrandId = 6,
+                            CreatedAt = new DateTime(2026, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Qovrulmuş noxud və tərəvəzlə zənginləşdirilmiş, yüksək zülallı sağlam qəlyanaltı dəsti.",
+                            DiscountPrice = 9.90m,
+                            IsActive = true,
+                            Name = "Pulsitos Təbii Qəlyanaltı Dəsti (3 Dad)",
+                            Price = 12.00m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-011",
+                            StockQuantity = 90
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BrandId = 4,
+                            CreatedAt = new DateTime(2026, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Bala itlərin inkişafı üçün xüsusi hazırlanmış, asan həzm olunan vitaminli pate.",
+                            IsActive = true,
+                            Name = "Butcher's Junior Quzu və Toyuq Ətli Bala Yemi",
+                            Price = 4.60m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-012",
+                            StockQuantity = 130
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2026, 3, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "100% təbii dondurularaq qurudulmuş toyuq sinəsi tikələri və dəri-tük sağlamlığı üçün omega-3 yağı.",
+                            DiscountPrice = 21.00m,
+                            IsActive = true,
+                            Name = "All Natural Qaxac Toyuq Əti və Qızılbalıq Yağı",
+                            Price = 24.50m,
+                            ProductCategoryId = 4,
+                            Sku = "FOD-CAT-013",
+                            StockQuantity = 65
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BrandId = 7,
+                            CreatedAt = new DateTime(2026, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Ev quşları və gəmiricilər üçün təbii hisə verilmiş dadlı və xırtıldayan qarğıdalı dənələri.",
+                            IsActive = true,
+                            Name = "Love Corn Hissə Verilmiş BBQ Qəlyanaltı",
+                            Price = 8.50m,
+                            ProductCategoryId = 5,
+                            Sku = "FOD-BRD-014",
+                            StockQuantity = 100
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BrandId = 4,
+                            CreatedAt = new DateTime(2026, 3, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Həssas həzm sisteminə uyğun zərif mal ətli ləziz souslu paştet.",
+                            DiscountPrice = 4.10m,
+                            IsActive = true,
+                            Name = "Butcher's Gastro Mal Ətli Zərif Paştet",
+                            Price = 4.90m,
+                            ProductCategoryId = 3,
+                            Sku = "FOD-DOG-015",
+                            StockQuantity = 115
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BrandId = 2,
+                            CreatedAt = new DateTime(2026, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "İtlər və pişiklər üçün təlim zamanı istifadə olunan, asan bölünən ətirli mükafat qəlyanaltısı.",
+                            DiscountPrice = 5.90m,
+                            IsActive = true,
+                            Name = "Winiary Təlim və Mükafat Kubikləri",
+                            Price = 7.20m,
+                            ProductCategoryId = 4,
+                            Sku = "FOD-PET-016",
+                            StockQuantity = 140
                         });
                 });
 
@@ -228,7 +803,7 @@ namespace PetShop.Migrations
                         new
                         {
                             ProductId = 2,
-                            AnimalTypeId = 2
+                            AnimalTypeId = 1
                         },
                         new
                         {
@@ -239,6 +814,71 @@ namespace PetShop.Migrations
                         {
                             ProductId = 4,
                             AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 5,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 5,
+                            AnimalTypeId = 2
+                        },
+                        new
+                        {
+                            ProductId = 6,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 7,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 8,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 9,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 10,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 11,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 12,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 13,
+                            AnimalTypeId = 2
+                        },
+                        new
+                        {
+                            ProductId = 14,
+                            AnimalTypeId = 3
+                        },
+                        new
+                        {
+                            ProductId = 15,
+                            AnimalTypeId = 1
+                        },
+                        new
+                        {
+                            ProductId = 16,
+                            AnimalTypeId = 2
                         });
                 });
 
@@ -251,6 +891,9 @@ namespace PetShop.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("IconClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -327,6 +970,14 @@ namespace PetShop.Migrations
                             Name = "Pişik Geyimi",
                             ParentCategoryId = 2,
                             Slug = "cloth-cat"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IconClass = "ph:house-line",
+                            Name = "Aksessuar və Yuvalar",
+                            ParentCategoryId = 2,
+                            Slug = "cloth-acc"
                         });
                 });
 
@@ -358,31 +1009,170 @@ namespace PetShop.Migrations
                         new
                         {
                             Id = 1,
-                            ImageUrl = "/images/products/royal-canin-dog.jpg",
+                            ImageUrl = "item1.jpg",
                             IsMain = true,
                             ProductId = 1
                         },
                         new
                         {
                             Id = 2,
-                            ImageUrl = "/images/products/whiskas-cat.jpg",
+                            ImageUrl = "item2.jpg",
                             IsMain = true,
                             ProductId = 2
                         },
                         new
                         {
                             Id = 3,
-                            ImageUrl = "/images/products/pedigree-puppy.jpg",
+                            ImageUrl = "item3.jpg",
                             IsMain = true,
                             ProductId = 3
                         },
                         new
                         {
                             Id = 4,
-                            ImageUrl = "/images/products/dog-jacket.jpg",
+                            ImageUrl = "item4.jpg",
                             IsMain = true,
                             ProductId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ImageUrl = "item5.jpg",
+                            IsMain = true,
+                            ProductId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ImageUrl = "item6.jpg",
+                            IsMain = true,
+                            ProductId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ImageUrl = "item7.jpg",
+                            IsMain = true,
+                            ProductId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ImageUrl = "item8.jpg",
+                            IsMain = true,
+                            ProductId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ImageUrl = "item9.jpg",
+                            IsMain = true,
+                            ProductId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ImageUrl = "item10.jpg",
+                            IsMain = true,
+                            ProductId = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ImageUrl = "item11.jpg",
+                            IsMain = true,
+                            ProductId = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ImageUrl = "item12.jpg",
+                            IsMain = true,
+                            ProductId = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ImageUrl = "item13.jpg",
+                            IsMain = true,
+                            ProductId = 13
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ImageUrl = "item14.jpg",
+                            IsMain = true,
+                            ProductId = 14
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ImageUrl = "item15.jpg",
+                            IsMain = true,
+                            ProductId = 15
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ImageUrl = "item16.jpg",
+                            IsMain = true,
+                            ProductId = 16
                         });
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.ProductReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVerifiedPurchase")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProductId", "UserId");
+
+                    b.ToTable("ProductReviews");
                 });
 
             modelBuilder.Entity("PetShop.DataContext.Entites.ProductVariant", b =>
@@ -421,37 +1211,346 @@ namespace PetShop.Migrations
                         new
                         {
                             Id = 1,
+                            Color = "Boz",
                             PriceModifier = 0m,
                             ProductId = 1,
-                            StockQuantity = 100,
-                            Weight = "3kg"
+                            Size = "S",
+                            StockQuantity = 30
                         },
                         new
                         {
                             Id = 2,
-                            PriceModifier = 0m,
-                            ProductId = 2,
-                            StockQuantity = 150,
-                            Weight = "1.5kg"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Color = "Blue",
-                            PriceModifier = 0m,
-                            ProductId = 4,
+                            Color = "Boz",
+                            PriceModifier = 2.00m,
+                            ProductId = 1,
                             Size = "M",
                             StockQuantity = 40
                         },
                         new
                         {
+                            Id = 3,
+                            Color = "Boz",
+                            PriceModifier = 4.00m,
+                            ProductId = 1,
+                            Size = "L",
+                            StockQuantity = 25
+                        },
+                        new
+                        {
                             Id = 4,
-                            Color = "Blue",
+                            Color = "Mavi Cins",
+                            PriceModifier = 0m,
+                            ProductId = 2,
+                            Size = "M",
+                            StockQuantity = 80
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Color = "Mavi Cins",
+                            PriceModifier = 3.00m,
+                            ProductId = 2,
+                            Size = "L",
+                            StockQuantity = 65
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Color = "Çəhrayı",
+                            PriceModifier = 0m,
+                            ProductId = 3,
+                            Size = "S",
+                            StockQuantity = 40
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Color = "Çəhrayı",
+                            PriceModifier = 2.50m,
+                            ProductId = 3,
+                            Size = "M",
+                            StockQuantity = 37
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Color = "Qara",
+                            PriceModifier = 0m,
+                            ProductId = 4,
+                            Size = "M",
+                            StockQuantity = 20
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Color = "Qara",
                             PriceModifier = 3.00m,
                             ProductId = 4,
                             Size = "L",
+                            StockQuantity = 18
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Color = "Təbii Taxta",
+                            PriceModifier = 0m,
+                            ProductId = 5,
+                            Size = "Standart",
+                            StockQuantity = 25
+                        },
+                        new
+                        {
+                            Id = 11,
+                            PriceModifier = 0m,
+                            ProductId = 6,
+                            StockQuantity = 70,
+                            Weight = "150g"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            PriceModifier = 3.00m,
+                            ProductId = 6,
+                            StockQuantity = 50,
+                            Weight = "300g"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Color = "Sarı",
+                            PriceModifier = 0m,
+                            ProductId = 7,
+                            Size = "S",
                             StockQuantity = 20
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Color = "Sarı",
+                            PriceModifier = 2.00m,
+                            ProductId = 7,
+                            Size = "M",
+                            StockQuantity = 25
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Color = "Sarı",
+                            PriceModifier = 4.00m,
+                            ProductId = 7,
+                            Size = "L",
+                            StockQuantity = 15
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Color = "Mavi Banan",
+                            PriceModifier = 0m,
+                            ProductId = 8,
+                            Size = "S",
+                            StockQuantity = 35
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Color = "Mavi Banan",
+                            PriceModifier = 2.00m,
+                            ProductId = 8,
+                            Size = "M",
+                            StockQuantity = 35
+                        },
+                        new
+                        {
+                            Id = 18,
+                            PriceModifier = 0m,
+                            ProductId = 9,
+                            StockQuantity = 85,
+                            Weight = "170g"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            PriceModifier = 0m,
+                            ProductId = 10,
+                            StockQuantity = 110,
+                            Weight = "150g"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            PriceModifier = 0m,
+                            ProductId = 11,
+                            StockQuantity = 90,
+                            Weight = "3x50g"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            PriceModifier = 0m,
+                            ProductId = 12,
+                            StockQuantity = 80,
+                            Weight = "150g"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            PriceModifier = 3.00m,
+                            ProductId = 12,
+                            StockQuantity = 50,
+                            Weight = "300g"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            PriceModifier = 0m,
+                            ProductId = 13,
+                            StockQuantity = 65,
+                            Weight = "100g"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            PriceModifier = 0m,
+                            ProductId = 14,
+                            StockQuantity = 100,
+                            Weight = "115g"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            PriceModifier = 0m,
+                            ProductId = 15,
+                            StockQuantity = 65,
+                            Weight = "150g"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            PriceModifier = 0m,
+                            ProductId = 16,
+                            StockQuantity = 140,
+                            Weight = "6 ədəd"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Color = "Mavi Cins",
+                            PriceModifier = 0m,
+                            ProductId = 2,
+                            Size = "S",
+                            StockQuantity = 50
                         });
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Wishlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("Wishlists");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.WishlistItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WishlistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.HasIndex("WishlistId");
+
+                    b.ToTable("WishlistItems");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.CartItem", b =>
+                {
+                    b.HasOne("PetShop.DataContext.Entites.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.OrderItem", b =>
+                {
+                    b.HasOne("PetShop.DataContext.Entites.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
                 });
 
             modelBuilder.Entity("PetShop.DataContext.Entites.Product", b =>
@@ -512,6 +1611,24 @@ namespace PetShop.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("PetShop.DataContext.Entites.ProductReview", b =>
+                {
+                    b.HasOne("PetShop.DataContext.Entites.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PetShop.DataContext.Entites.ProductVariant", b =>
                 {
                     b.HasOne("PetShop.DataContext.Entites.Product", "Product")
@@ -521,6 +1638,32 @@ namespace PetShop.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.WishlistItem", b =>
+                {
+                    b.HasOne("PetShop.DataContext.Entites.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetShop.DataContext.Entites.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PetShop.DataContext.Entites.Wishlist", "Wishlist")
+                        .WithMany("WishlistItems")
+                        .HasForeignKey("WishlistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
+
+                    b.Navigation("Wishlist");
                 });
 
             modelBuilder.Entity("PetShop.DataContext.Entites.AnimalType", b =>
@@ -533,11 +1676,23 @@ namespace PetShop.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("PetShop.DataContext.Entites.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("PetShop.DataContext.Entites.Product", b =>
                 {
                     b.Navigation("Images");
 
                     b.Navigation("ProductAnimalTypes");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("Variants");
                 });
@@ -547,6 +1702,11 @@ namespace PetShop.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("PetShop.DataContext.Entites.Wishlist", b =>
+                {
+                    b.Navigation("WishlistItems");
                 });
 #pragma warning restore 612, 618
         }

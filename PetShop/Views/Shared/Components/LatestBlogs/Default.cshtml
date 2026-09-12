@@ -1,0 +1,31 @@
+@model IEnumerable<PetShop.DataContext.Entites.BlogPost>
+
+@foreach (var post in Model)
+{
+    var postImg = string.IsNullOrEmpty(post.ImageUrl)
+        ? "/images/blog1.jpg"
+        : (post.ImageUrl.StartsWith("/") ? post.ImageUrl : $"/images/{post.ImageUrl}");
+
+    <div class="col-md-4 my-4 my-md-0">
+        <div class="z-1 position-absolute rounded-3 m-2 px-3 pt-1 bg-light">
+            <h3 class="secondary-font text-primary m-0">@post.PublishedAt.Day</h3>
+            <p class="secondary-font fs-6 m-0">@post.PublishedAt.ToString("MMM")</p>
+        </div>
+        <div class="card position-relative h-100 d-flex flex-column border-0">
+            <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug" class="d-block overflow-hidden rounded-4" style="aspect-ratio: 16 / 10; background: #FAF7F2;">
+                <img src="@postImg" class="img-fluid w-100 h-100 object-fit-cover" alt="@post.Title"
+                     onerror="this.onerror=null;this.src='/images/blog1.jpg';">
+            </a>
+            <div class="card-body p-0">
+                <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug">
+                    <h3 class="card-title pt-4 pb-3 m-0">@post.Title</h3>
+                </a>
+                <div class="card-text">
+                    <p class="blog-paragraph fs-6">@post.Summary</p>
+                    <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug"
+                       class="blog-read">read more</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,57 @@
+@model IEnumerable<PetShop.DataContext.Entites.Order>
+@{ ViewData["Title"] = "Orders"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <h1 class="h3 mb-1">Orders</h1>
+        </div>
+
+        <section class="panel mt-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td>#@item.Id</td>
+                            <td>
+                                @item.CustomerName <br/>
+                                <small class="text-muted">@item.Email</small>
+                            </td>
+                            <td>@item.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td class="fw-bold">$@item.TotalAmount</td>
+                            <td>
+                                @switch(item.OrderStatus) {
+                                    case "Pending": <span class="badge bg-warning text-dark">Pending</span>; break;
+                                    case "Processing": <span class="badge bg-info text-dark">Processing</span>; break;
+                                    case "Shipped": <span class="badge bg-primary">Shipped</span>; break;
+                                    case "Delivered": <span class="badge bg-success">Delivered</span>; break;
+                                    case "Cancelled": <span class="badge bg-danger">Cancelled</span>; break;
+                                    default: <span class="badge bg-secondary">@item.OrderStatus</span>; break;
+                                }
+                            </td>
+                            <td>
+                                @if(item.PaymentStatus == "Paid") { <span class="text-success"><i class="bi bi-check-circle"></i> Paid</span> }
+                                else if(item.PaymentStatus == "Pending") { <span class="text-warning"><i class="bi bi-clock"></i> Pending</span> }
+                                else { <span class="text-danger">@item.PaymentStatus</span> }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>

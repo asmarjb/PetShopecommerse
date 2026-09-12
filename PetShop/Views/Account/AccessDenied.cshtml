@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Giriş Məhdudlaşdırılıb";
+}
+
+<section class="py-5" style="background-color: #FAF7F2; min-height: 70vh;">
+    <div class="container py-5 text-center">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <iconify-icon icon="solar:shield-warning-bold" class="fs-1"></iconify-icon>
+                    </div>
+                    <h2 class="fw-bold mb-2">Girişə İcazə Yoxdur</h2>
+                    <p class="text-muted mb-4">
+                        Bu səhifəyə daxil olmaq üçün müvafiq səlahiyyətiniz və ya icazəniz yoxdur.
+                    </p>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4 py-2">
+                            <iconify-icon icon="solar:home-2-bold" class="me-1 align-middle"></iconify-icon>
+                            Ana Səhifəyə Qayıt
+                        </a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            <iconify-icon icon="solar:login-2-bold" class="me-1 align-middle"></iconify-icon>
+                            Daxil Ol
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

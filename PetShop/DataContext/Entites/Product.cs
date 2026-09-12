@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 
 namespace PetShop.DataContext.Entites
@@ -24,6 +24,7 @@ namespace PetShop.DataContext.Entites
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
         public ICollection<ProductAnimalType> ProductAnimalTypes { get; set; } = new List<ProductAnimalType>();
+        public ICollection<ProductReview> Reviews { get; set; } = new List<ProductReview>();
     }
     
 }

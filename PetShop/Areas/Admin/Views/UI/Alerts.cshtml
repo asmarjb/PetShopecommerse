@@ -1,0 +1,35 @@
+@{ ViewData["Title"] = "Alerts"; }
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <div class="page-heading-copy">
+                <span class="page-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
+                <div>
+                    <h1 class="h3 mb-1">Alerts</h1>
+                    <p class="text-muted mb-0">System feedback messages.</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="panel mt-4">
+            <div class="panel-body p-4">
+                <div class="alert alert-primary" role="alert">
+                  A simple primary alert—check it out!
+                </div>
+                <div class="alert alert-secondary" role="alert">
+                  A simple secondary alert—check it out!
+                </div>
+                <div class="alert alert-success" role="alert">
+                  A simple success alert—check it out!
+                </div>
+                <div class="alert alert-danger" role="alert">
+                  A simple danger alert—check it out!
+                </div>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>

@@ -1,0 +1,330 @@
+@model PetShop.Models.CheckoutViewModel
+@{
+    ViewData["Title"] = "Sifarişin Rəsmiləşdirilməsi";
+}
+
+<section class="shopify-cart checkout-wrap py-5">
+    <div class="container my-3 my-md-4">
+        <!-- Breadcrumb / Header -->
+        <div class="mb-4">
+            <h1 class="display-6 fw-bold text-dark mb-1">Sifarişi Tamamla</h1>
+            <p class="text-muted">Zəhmət olmasa çatdırılma məlumatlarınızı daxil edin və sifarişinizi təsdiqləyin.</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <iconify-icon icon="solar:danger-circle-bold" class="fs-4 text-danger"></iconify-icon>
+                    <strong class="fs-6">Sifariş rəsmiləşdirilərkən xəta baş verdi:</strong>
+                </div>
+                <div asp-validation-summary="All" class="mb-0 text-danger ps-3 small"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Client-side Validation Alert Box -->
+        <div id="checkoutClientAlert" class="alert alert-warning alert-dismissible fade show d-none mb-4 shadow-sm" role="alert">
+            <div class="d-flex align-items-center gap-2">
+                <iconify-icon icon="solar:shield-warning-bold" class="fs-4 text-warning-emphasis"></iconify-icon>
+                <span id="checkoutClientAlertMsg" class="fw-medium"></span>
+            </div>
+            <button type="button" class="btn-close" onclick="document.getElementById('checkoutClientAlert').classList.add('d-none');"></button>
+        </div>
+
+        <form id="checkoutForm" method="post" asp-action="Index" asp-controller="Checkout" novalidate>
+            @Html.AntiForgeryToken()
+            <div class="row g-4">
+                <!-- Left Column: Billing Details -->
+                <div class="col-lg-7">
+                    <div class="card border rounded-3 shadow-sm p-4 p-md-4 bg-white mb-4">
+                        <h4 class="fw-semibold text-dark pb-2 border-bottom mb-4 d-flex align-items-center gap-2">
+                            <iconify-icon icon="solar:user-id-bold" class="text-primary fs-4"></iconify-icon>
+                            Çatdırılma Məlumatları
+                        </h4>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label for="fname" class="form-label fw-medium text-dark">Ad <span class="text-danger">*</span></label>
+                                <input type="text" id="fname" name="FirstName" value="@Model.FirstName" class="form-control" placeholder="Adınız" required>
+                                <div class="invalid-feedback">Zəhmət olmasa adınızı daxil edin.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="lname" class="form-label fw-medium text-dark">Soyad <span class="text-danger">*</span></label>
+                                <input type="text" id="lname" name="LastName" value="@Model.LastName" class="form-control" placeholder="Soyadınız" required>
+                                <div class="invalid-feedback">Zəhmət olmasa soyadınızı daxil edin.</div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="country" class="form-label fw-medium text-dark">Ölkə / Region <span class="text-danger">*</span></label>
+                                <select id="country" name="Country" class="form-select">
+                                    <option value="Azərbaycan" selected="@(Model.Country == "Azərbaycan" || string.IsNullOrEmpty(Model.Country))">Azərbaycan</option>
+                                    <option value="Türkiyə" selected="@(Model.Country == "Türkiyə")">Türkiyə</option>
+                                    <option value="United States" selected="@(Model.Country == "United States")">United States</option>
+                                    <option value="UK" selected="@(Model.Country == "UK")">UK</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="city" class="form-label fw-medium text-dark">Şəhər <span class="text-danger">*</span></label>
+                                <input type="text" id="city" name="City" value="@Model.City" class="form-control" placeholder="Məs: Bakı" required>
+                                <div class="invalid-feedback">Zəhmət olmasa şəhəri daxil edin.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="adr" class="form-label fw-medium text-dark">Küçə və Ev Ünvanı <span class="text-danger">*</span></label>
+                                <input type="text" id="adr" name="Address" value="@Model.Address" placeholder="Küçə adı, bina və mənzil nömrəsi" class="form-control mb-2" required>
+                                <input type="text" id="adr2" name="Address2" value="@Model.Address2" placeholder="Əlavə məlumat: blok, mərtəbə, qapı kodu və s. (istəyə bağlı)" class="form-control">
+                                <div class="invalid-feedback">Zəhmət olmasa çatdırılma ünvanını daxil edin.</div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="state" class="form-label fw-medium text-dark">Rayon / Ərazi</label>
+                                <input type="text" id="state" name="State" value="@Model.State" class="form-control" placeholder="Məs: Nəsimi, Yasamal">
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="zip" class="form-label fw-medium text-dark">Poçt İndeksi</label>
+                                <input type="text" id="zip" name="Zip" value="@Model.Zip" class="form-control" placeholder="AZ1000">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="phone" class="form-label fw-medium text-dark">Əlaqə Nömrəsi <span class="text-danger">*</span></label>
+                                <input type="tel" id="phone" name="Phone" value="@Model.Phone" class="form-control" placeholder="+994 50 000 00 00" required>
+                                <div class="invalid-feedback">Zəhmət olmasa əlaqə nömrənizi daxil edin.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="email" class="form-label fw-medium text-dark">E-poçt Ünvanı <span class="text-danger">*</span></label>
+                                <input type="email" id="email" name="Email" value="@Model.Email" class="form-control" placeholder="numune@example.com" required>
+                                <div class="invalid-feedback">Zəhmət olmasa düzgün e-poçt ünvanı daxil edin.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-3 shadow-sm p-4 p-md-4 bg-white">
+                        <h4 class="fw-semibold text-dark pb-2 border-bottom mb-3 d-flex align-items-center gap-2">
+                            <iconify-icon icon="solar:notes-bold" class="text-secondary fs-4"></iconify-icon>
+                            Əlavə Qeyd
+                        </h4>
+                        <div>
+                            <label for="notes" class="form-label fw-medium text-dark">Sifariş Qeydi (istəyə bağlı)</label>
+                            <textarea id="notes" name="Notes" class="form-control" rows="3" placeholder="Kuryer üçün xüsusi təlimat və ya sifarişlə bağlı qeydləriniz...">@Model.Notes</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Order Summary & Checkout Action -->
+                <div class="col-lg-5">
+                    <div class="card border rounded-3 shadow-sm p-4 bg-white sticky-lg-top" style="top: 2rem; z-index: 10;">
+                        <h4 class="fw-semibold text-dark pb-2 border-bottom mb-3 d-flex align-items-center gap-2">
+                            <iconify-icon icon="solar:bag-check-bold" class="text-success fs-4"></iconify-icon>
+                            Sifariş Xülasəsi
+                        </h4>
+
+                        @if (Model.Basket == null || Model.Basket.IsEmpty)
+                        {
+                            <div class="alert alert-warning py-4 text-center my-3">
+                                <iconify-icon icon="mdi:cart-off" class="fs-1 d-block mb-2 text-warning"></iconify-icon>
+                                <h5>Səbətinizdə heç bir məhsul yoxdur</h5>
+                                <p class="mb-3 text-muted small">Sifariş rəsmiləşdirmək üçün əvvəlcə səbətinizə məhsul əlavə edin.</p>
+                                <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark btn-sm rounded-1">Mağazaya get</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Product Items List -->
+                            <div class="table-responsive mb-3" style="max-height: 280px; overflow-y: auto;">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-muted text-uppercase small border-bottom">
+                                            <th>Məhsul</th>
+                                            <th class="text-end">Məbləğ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Basket.Items)
+                                        {
+                                            <tr class="border-bottom">
+                                                <td class="py-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="@item.ProductImagePath" alt="@item.ProductName"
+                                                             class="rounded-2 border me-2 flex-shrink-0"
+                                                             style="width: 48px; height: 48px; object-fit: cover;"
+                                                             onerror="this.onerror=null;this.src='/images/no-image.png';">
+                                                        <div class="min-w-0">
+                                                            <div class="fw-medium text-dark text-truncate small" style="max-width: 170px;" title="@item.ProductName">
+                                                                @item.ProductName
+                                                            </div>
+                                                            <small class="text-muted d-block">
+                                                                @item.Quantity &times; @item.UnitPrice.ToString("0.00") &#8380;
+                                                            </small>
+                                                            @if (!string.IsNullOrEmpty(item.VariantLabel))
+                                                            {
+                                                                <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">@item.VariantLabel</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-2 text-end fw-semibold text-dark">
+                                                    @item.TotalPrice.ToString("0.00") &#8380;
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Calculations -->
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between py-2 border-bottom border-light">
+                                    <span class="fw-medium text-dark fs-6" style="color: #111111 !important;">Aralıq cəm:</span>
+                                    <span class="fw-bold text-dark fs-6" style="color: #111111 !important;">@Model.Basket.TotalPrice.ToString("0.00") &#8380;</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-2 border-bottom border-light">
+                                    <span class="fw-medium text-dark fs-6" style="color: #111111 !important;">Çatdırılma:</span>
+                                    <span class="fw-bold text-dark fs-6" style="color: #111111 !important;">@(Model.Basket.IsEmpty ? "0.00 ₼" : "4.99 ₼")</span>
+                                </div>
+                                @if (Model.Basket.IsFreeShipping)
+                                {
+                                    <div class="d-flex justify-content-between py-1" style="color: #e03131 !important;">
+                                        <span class="small fw-semibold">50 AZN və yuxarı sifarişdə karqo ödənişsiz:</span>
+                                        <span class="fw-semibold">-4.99 &#8380;</span>
+                                    </div>
+                                }
+                                @if (Model.Basket.DiscountAmount > 0)
+                                {
+                                    <div class="d-flex justify-content-between py-1 text-success">
+                                        <span class="fw-medium">Ümumi endirim (@Model.Basket.AppliedCouponCode):</span>
+                                        <span class="fw-semibold">-@Model.Basket.DiscountAmount.ToString("0.00") &#8380;</span>
+                                    </div>
+                                }
+                                <div class="d-flex justify-content-between align-items-center py-2 mt-2 border-top">
+                                    <span class="fs-5 fw-bold text-dark" style="color: #111111 !important;">Yekun Məbləğ:</span>
+                                    <span class="fs-4 fw-bold text-dark" style="color: #111111 !important;">@Model.Basket.FinalTotal.ToString("0.00") &#8380;</span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Methods Selection -->
+                            <div class="mt-4 mb-3">
+                                <h6 class="fw-semibold text-dark mb-2">Ödəniş Üsulu</h6>
+                                <div class="list-group">
+                                    <label class="list-group-item d-flex gap-3 align-items-start border rounded-2 p-3 mb-2 cursor-pointer shadow-sm">
+                                        <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="PaymentMethod"
+                                               id="payment1" value="cash" @(Model.PaymentMethod != "bank" ? "checked" : "")>
+                                        <span>
+                                            <strong class="text-dark d-block">Qapıda nağd / POS-terminal ilə</strong>
+                                            <small class="text-muted d-block">Sifarişi kuryerdən təhvil alarkən nağd və ya kartla ödəyin.</small>
+                                        </span>
+                                    </label>
+                                    <label class="list-group-item d-flex gap-3 align-items-start border rounded-2 p-3 cursor-pointer shadow-sm">
+                                        <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="PaymentMethod"
+                                               id="payment2" value="bank" @(Model.PaymentMethod == "bank" ? "checked" : "")>
+                                        <span>
+                                            <strong class="text-dark d-block">Bank Kartı ilə ödəniş</strong>
+                                            <small class="text-muted d-block">Visa / MasterCard vasitəsilə təhlükəsiz ödəniş.</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" id="checkoutSubmitBtn" class="btn btn-dark btn-lg rounded-2 w-100 py-3 fw-bold fs-6 d-flex align-items-center justify-content-center gap-2 shadow">
+                                <span id="checkoutSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <span id="checkoutBtnText">Sifarişi Təsdiqlə</span>
+                            </button>
+                            <p class="text-center text-muted small mt-2 mb-0">
+                                <iconify-icon icon="solar:shield-check-bold" class="text-success align-middle me-1"></iconify-icon>
+                                Məlumatlarınız 256-bit SSL ilə tam qorunur
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+
+            const form = document.getElementById("checkoutForm");
+            const submitBtn = document.getElementById("checkoutSubmitBtn");
+            const spinner = document.getElementById("checkoutSpinner");
+            const btnText = document.getElementById("checkoutBtnText");
+            const alertBox = document.getElementById("checkoutClientAlert");
+            const alertMsg = document.getElementById("checkoutClientAlertMsg");
+
+            if (!form) return;
+
+            // Remove invalid styling on user typing
+            form.querySelectorAll("input, select, textarea").forEach(function (input) {
+                input.addEventListener("input", function () {
+                    this.classList.remove("is-invalid");
+                    if (alertBox) alertBox.classList.add("d-none");
+                });
+            });
+
+            form.addEventListener("submit", function (e) {
+                let isValid = true;
+                let firstInvalid = null;
+
+                const requiredFields = [
+                    { id: "fname", name: "Ad" },
+                    { id: "lname", name: "Soyad" },
+                    { id: "city", name: "Şəhər" },
+                    { id: "adr", name: "Küçə və Ev Ünvanı" },
+                    { id: "phone", name: "Əlaqə Nömrəsi" },
+                    { id: "email", name: "E-poçt Ünvanı" }
+                ];
+
+                requiredFields.forEach(function (field) {
+                    const el = document.getElementById(field.id);
+                    if (!el) return;
+
+                    const val = el.value.trim();
+                    if (!val) {
+                        el.classList.add("is-invalid");
+                        isValid = false;
+                        if (!firstInvalid) firstInvalid = el;
+                    } else if (field.id === "email" && !/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(val)) {
+                        el.classList.add("is-invalid");
+                        isValid = false;
+                        if (!firstInvalid) firstInvalid = el;
+                    } else {
+                        el.classList.remove("is-invalid");
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (alertBox && alertMsg) {
+                        alertMsg.textContent = "Zəhmət olmasa tələb olunan ulduzlu (*) sahələri düzgün doldurun.";
+                        alertBox.classList.remove("d-none");
+                    }
+
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+                        firstInvalid.focus();
+                    }
+                    return false;
+                }
+
+                // If valid, show loading spinner and prevent duplicate submissions
+                if (submitBtn) {
+                    submitBtn.style.pointerEvents = "none";
+                    submitBtn.classList.add("opacity-75");
+                    if (spinner) spinner.classList.remove("d-none");
+                    if (btnText) btnText.textContent = "Sifarişiniz təsdiqlənir...";
+                    setTimeout(function () {
+                        submitBtn.disabled = true;
+                    }, 50);
+                }
+
+                // Allow form submit to continue
+                return true;
+            });
+        })();
+    </script>
+}

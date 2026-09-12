@@ -1,0 +1,1111 @@
+@model PetShop.Models.SingleProductViewModel
+@{
+    var product = Model.Product;
+    ViewData["Title"] = $"{product.Name} - PetShop";
+
+    var mainImageObj = product.Images.FirstOrDefault(i => i.IsMain) ?? product.Images.FirstOrDefault();
+    var mainImageFileName = mainImageObj?.ImageUrl;
+    var mainImageUrl = string.IsNullOrEmpty(mainImageFileName)
+        ? "/images/no-image.png"
+        : (mainImageFileName.StartsWith("/") ? mainImageFileName : $"/images/{mainImageFileName}");
+
+    var hasDiscount = product.DiscountPrice.HasValue && product.DiscountPrice.Value < product.Price;
+    var discountPercent = hasDiscount ? Math.Round((1 - (product.DiscountPrice!.Value / product.Price)) * 100) : 0;
+    var isNew = product.CreatedAt >= DateTime.UtcNow.AddDays(-14);
+    var isOutOfStock = product.StockQuantity <= 0;
+
+    int GetVariantOrder(string? size) => size?.Trim().ToUpperInvariant() switch
+    {
+        "XS" => 1,
+        "S" => 2,
+        "M" => 3,
+        "L" => 4,
+        "XL" => 5,
+        "XXL" => 6,
+        "STANDART" => 7,
+        _ => 10
+    };
+
+    var orderedVariants = product.Variants != null
+        ? product.Variants
+            .OrderBy(v => GetVariantOrder(v.Size))
+            .ThenBy(v => v.Weight)
+            .ThenBy(v => v.Id)
+            .ToList()
+        : new List<PetShop.DataContext.Entites.ProductVariant>();
+
+    var hasVariants = orderedVariants.Any();
+    var firstVariant = orderedVariants.FirstOrDefault();
+    var currentBasePrice = (product.DiscountPrice ?? product.Price) + (firstVariant?.PriceModifier ?? 0m);
+    var currentOldPrice = product.Price + (firstVariant?.PriceModifier ?? 0m);
+}
+
+<section class="single-product-section py-5" style="background-color: #FAF7F2; min-height: 85vh;">
+    <div class="container py-3">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">
+                        <iconify-icon icon="solar:home-2-bold" class="align-middle me-1"></iconify-icon>Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Shop" asp-action="Index" class="text-decoration-none text-muted">Shop</a>
+                </li>
+                @if (product.ProductCategory != null)
+                {
+                    <li class="breadcrumb-item">
+                        <a href="/products/@product.ProductCategory.Slug" class="text-decoration-none text-muted">
+                            @product.ProductCategory.Name
+                        </a>
+                    </li>
+                }
+                <li class="breadcrumb-item active text-primary fw-semibold text-truncate" style="max-width: 280px;" aria-current="page">
+                    @product.Name
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product Main Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white mb-5">
+            <div class="row g-4 g-lg-5 align-items-start">
+                
+                <!-- LEFT: Images Gallery -->
+                <div class="col-12 col-lg-6">
+                    <div class="product-gallery">
+                        <!-- Main Hero Image Box -->
+                        <div class="main-image-container position-relative rounded-4 overflow-hidden border bg-light d-flex align-items-center justify-content-center mb-3"
+                             style="height: 440px; background: #fdfdfd;">
+                            
+                            <!-- Badges -->
+                            <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2 z-2">
+                                @if (isOutOfStock)
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm">Sold Out</span>
+                                }
+                                else if (hasDiscount)
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm">-@discountPercent% Off</span>
+                                }
+                                @if (isNew)
+                                {
+                                    <span class="badge bg-success rounded-pill px-3 py-2 fs-6 shadow-sm">New</span>
+                                }
+                            </div>
+
+                            <img id="mainProductImage"
+                                 src="@mainImageUrl"
+                                 alt="@product.Name"
+                                 class="img-fluid object-fit-contain p-3"
+                                 style="max-height: 400px; width: 100%; transition: transform 0.3s ease;"
+                                 onerror="this.onerror=null;this.src='/images/no-image.png';" />
+                        </div>
+
+                        <!-- Thumbnails list (if multiple images) -->
+                        @if (product.Images != null && product.Images.Count > 1)
+                        {
+                            <div class="d-flex gap-2 overflow-auto pb-2 custom-thumbnails-row">
+                                @foreach (var img in product.Images)
+                                {
+                                    var thumbUrl = string.IsNullOrEmpty(img.ImageUrl)
+                                        ? "/images/no-image.png"
+                                        : (img.ImageUrl.StartsWith("/") ? img.ImageUrl : $"/images/{img.ImageUrl}");
+                                    var isSelected = img == mainImageObj;
+
+                                    <div class="thumbnail-item rounded-3 border p-1 bg-white cursor-pointer @(isSelected ? "border-primary shadow-sm active-thumb" : "")"
+                                         style="width: 76px; height: 76px; flex-shrink: 0; cursor: pointer; transition: all 0.2s ease;"
+                                         onclick="changeMainImage('@thumbUrl', this)">
+                                        <img src="@thumbUrl"
+                                             alt="@product.Name"
+                                             class="w-100 h-100 object-fit-contain"
+                                             onerror="this.onerror=null;this.src='/images/no-image.png';" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- RIGHT: Product Info & Actions -->
+                <div class="col-12 col-lg-6">
+                    <div class="product-details d-flex flex-column h-100">
+                        
+                        <!-- Category & Brand Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                @if (product.ProductCategory != null)
+                                {
+                                    <a href="/products/@product.ProductCategory.Slug" class="badge bg-light text-secondary text-decoration-none border px-3 py-2 rounded-pill small">
+                                        @product.ProductCategory.Name
+                                    </a>
+                                }
+                                @if (product.Brand != null)
+                                {
+                                    <span class="text-muted small fw-medium">
+                                        <iconify-icon icon="solar:tag-bold" class="align-middle me-1"></iconify-icon>@product.Brand.Name
+                                    </span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(product.Sku))
+                            {
+                                <span class="text-muted small">
+                                    SKU: <strong class="text-dark">@product.Sku</strong>
+                                </span>
+                            }
+                        </div>
+
+                        <!-- Product Title -->
+                        <h1 class="fw-bold text-dark mb-2 display-6 fs-2">@product.Name</h1>
+
+                        <!-- Dynamic Rating & Stock Status -->
+                        <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                            <a href="#productTabsCard" onclick="switchToReviewsTab(); return false;" class="text-decoration-none d-flex align-items-center gap-1" title="Rəyləri oxu">
+                                <div class="rating secondary-font d-flex align-items-center gap-1 text-warning">
+                                    @{
+                                        int fullStars = (int)Math.Floor(Model.AverageRating);
+                                        bool hasHalf = (Model.AverageRating - fullStars) >= 0.4;
+                                    }
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= fullStars)
+                                        {
+                                            <iconify-icon icon="clarity:star-solid" class="fs-5 text-warning"></iconify-icon>
+                                        }
+                                        else if (i == fullStars + 1 && hasHalf)
+                                        {
+                                            <iconify-icon icon="clarity:star-solid" class="fs-5 text-warning"></iconify-icon>
+                                        }
+                                        else
+                                        {
+                                            <iconify-icon icon="clarity:star-line" class="fs-5 text-muted opacity-50"></iconify-icon>
+                                        }
+                                    }
+                                    <span class="ms-1 fw-bold text-dark">@(Model.TotalReviews > 0 ? Model.AverageRating.ToString("0.0") : "5.0")</span>
+                                    <span class="text-muted small ms-1 text-decoration-underline">
+                                        (@(Model.TotalReviews > 0 ? $"{Model.TotalReviews} rəy" : "0 rəy"))
+                                    </span>
+                                </div>
+                            </a>
+
+                            <button type="button" onclick="switchToReviewsTab(true); return false;" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 shadow-none" style="font-size: 0.8rem; font-weight: 600;">
+                                <span style="color: #f59e0b; font-size: 1rem; line-height: 1;">★</span> Ulduz ver
+                            </button>
+
+                            <span class="text-muted mx-1">|</span>
+
+                            <div>
+                                @if (isOutOfStock)
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger fw-semibold px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
+                                        <iconify-icon icon="mdi:close-circle" class="fs-5"></iconify-icon> Sold Out
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success fw-semibold px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
+                                        <iconify-icon icon="mdi:check-circle" class="fs-5"></iconify-icon> In Stock (@product.StockQuantity left)
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Price Box -->
+                        <div class="price-container p-3 rounded-3 mb-4 d-flex align-items-baseline gap-3" style="background: #F9F3EC;">
+                            <div class="d-flex align-items-baseline gap-2">
+                                <span id="displayedProductPrice" class="display-6 fw-bold text-primary mb-0">
+                                    @currentBasePrice.ToString("0.00") ₼
+                                </span>
+                                @if (hasDiscount)
+                                {
+                                    <span id="displayedOldPrice" class="text-muted text-decoration-line-through fs-5">
+                                        @currentOldPrice.ToString("0.00") ₼
+                                    </span>
+                                    <span class="badge bg-danger rounded-pill px-2 py-1 small">
+                                        Qənaət: @((product.Price - product.DiscountPrice!.Value).ToString("0.00")) ₼
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Short Description -->
+                        @if (!string.IsNullOrWhiteSpace(product.Description))
+                        {
+                            <div class="mb-4">
+                                <p class="text-dark mb-0 lh-base fw-medium" style="color: #111111 !important; max-height: 90px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                    @product.Description
+                                </p>
+                            </div>
+                        }
+
+                        <!-- Animal Types (if any) -->
+                        @if (product.ProductAnimalTypes != null && product.ProductAnimalTypes.Any())
+                        {
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-dark text-uppercase mb-2">Uyğun Heyvan Növləri:</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var pat in product.ProductAnimalTypes)
+                                    {
+                                        <span class="badge bg-white border text-dark px-3 py-2 rounded-pill shadow-xs d-inline-flex align-items-center gap-1">
+                                            <iconify-icon icon="solar:paw-bold" class="text-primary"></iconify-icon>
+                                            @pat.AnimalType.Name
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Variants Selection -->
+                        @if (hasVariants)
+                        {
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-dark text-uppercase mb-2">Variant Seçin:</label>
+                                <div class="d-flex flex-wrap gap-2" id="variantSelectorGroup">
+                                    @for (int i = 0; i < orderedVariants.Count; i++)
+                                    {
+                                        var variant = orderedVariants[i];
+                                        var isFirst = i == 0;
+                                        string label;
+                                        if (!string.IsNullOrWhiteSpace(variant.Size))
+                                        {
+                                            label = variant.Size.Trim().ToUpperInvariant();
+                                            if (label.Equals("STANDART", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                label = "Standart";
+                                            }
+                                        }
+                                        else if (!string.IsNullOrWhiteSpace(variant.Weight))
+                                        {
+                                            label = variant.Weight.Trim();
+                                        }
+                                        else
+                                        {
+                                            label = "Standart";
+                                        }
+
+                                        <button type="button"
+                                                class="btn @(isFirst ? "btn-dark active" : "btn-outline-dark") rounded-pill px-3 py-2 text-sm variant-btn"
+                                                data-variant-id="@variant.Id"
+                                                data-modifier="@variant.PriceModifier"
+                                                onclick="selectVariant(this, '@variant.Id', @variant.PriceModifier)">
+                                            @label
+                                            @if (variant.PriceModifier > 0)
+                                            {
+                                                <span class="small text-primary">(+@variant.PriceModifier.ToString("0.00") ₼)</span>
+                                            }
+                                            else if (variant.PriceModifier < 0)
+                                            {
+                                                <span class="small text-success">(@variant.PriceModifier.ToString("0.00") ₼)</span>
+                                            }
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-dark text-uppercase mb-2">Variant Seçin:</label>
+                                <div class="d-flex flex-wrap gap-2" id="variantSelectorGroup">
+                                    <button type="button"
+                                            class="btn btn-dark active rounded-pill px-3 py-2 text-sm variant-btn"
+                                            data-variant-id=""
+                                            data-modifier="0"
+                                            onclick="selectVariant(this, '', 0)">
+                                        Standart
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Quantity and Action Buttons -->
+                        <div class="mt-auto pt-3 border-top">
+                            <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+                                
+                                <input type="hidden" id="productQuantityInput" value="1" />
+
+                                <!-- Add to Cart Button -->
+                                @if (isOutOfStock)
+                                {
+                                    <button class="btn btn-secondary rounded-pill px-4 py-3 flex-grow-1 fw-semibold disabled d-flex align-items-center justify-content-center gap-2" disabled>
+                                        <iconify-icon icon="solar:cart-cross-bold" class="fs-5"></iconify-icon>
+                                        Məhsul Tükənib
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="addToCartMainBtn"
+                                            class="btn btn-primary rounded-pill px-4 py-3 flex-grow-1 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 text-uppercase"
+                                            onclick="executeAddToCart(@product.Id)">
+                                        <iconify-icon icon="mdi:cart" class="fs-5"></iconify-icon>
+                                        <span>Səbətə Əlavə Et</span>
+                                    </button>
+                                }
+
+                                <!-- Wishlist Button -->
+                                <button type="button"
+                                        class="btn btn-wishlist-circle p-0 d-flex align-items-center justify-content-center @(Model.IsWishlisted ? "wishlisted" : "")"
+                                        style="width: 50px; height: 50px; flex-shrink: 0; @(Model.IsWishlisted ? "border-color: #ff0000 !important;" : "")"
+                                        data-product-id="@product.Id"
+                                        onclick="toggleWishlist(this, @product.Id); return false;"
+                                        title="@(Model.IsWishlisted ? "İstək siyahısından çıxar" : "İstək siyahısına əlavə et")">
+                                    <iconify-icon icon="fluent:heart-28-filled" class="fs-4" style="@(Model.IsWishlisted ? "color: #ff0000 !important;" : "color: #000000 !important;")"></iconify-icon>
+                                </button>
+                            </div>
+
+                            <!-- Trust Badges -->
+                            <div class="row g-3 pt-3 border-top">
+                                <div class="col-6 col-md-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle d-flex">
+                                            <iconify-icon icon="solar:delivery-bold" class="fs-5"></iconify-icon>
+                                        </div>
+                                        <span class="small text-muted lh-1">Sürətli Çatdırılma</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-success bg-opacity-10 text-success p-2 rounded-circle d-flex">
+                                            <iconify-icon icon="solar:shield-check-bold" class="fs-5"></iconify-icon>
+                                        </div>
+                                        <span class="small text-muted lh-1">Orijinal Zəmanət</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-info bg-opacity-10 text-info p-2 rounded-circle d-flex">
+                                            <iconify-icon icon="solar:card-bold" class="fs-5"></iconify-icon>
+                                        </div>
+                                        <span class="small text-muted lh-1">Təhlükəsiz Ödəniş</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-circle d-flex">
+                                            <iconify-icon icon="solar:refresh-circle-bold" class="fs-5"></iconify-icon>
+                                        </div>
+                                        <span class="small text-muted lh-1">14 Gün İadə</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS: Description, Specifications, Shipping, Reviews -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white mb-5" id="productTabsCard">
+            <ul class="nav nav-pills gap-2 mb-4 border-bottom pb-3" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4 py-2 fw-semibold" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc-content" type="button" role="tab">
+                        <iconify-icon icon="solar:document-text-bold" class="align-middle me-1"></iconify-icon> Description
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="spec-tab" data-bs-toggle="pill" data-bs-target="#spec-content" type="button" role="tab">
+                        <iconify-icon icon="solar:list-check-bold" class="align-middle me-1"></iconify-icon> Specifications
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="ship-tab" data-bs-toggle="pill" data-bs-target="#ship-content" type="button" role="tab">
+                        <iconify-icon icon="solar:box-bold" class="align-middle me-1"></iconify-icon> Shipping & Returns
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews-content" type="button" role="tab">
+                        <iconify-icon icon="solar:chat-round-dots-bold" class="align-middle me-1"></iconify-icon> Customer Reviews (@Model.TotalReviews)
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="productTabsContent">
+                <!-- Tab 1: Description -->
+                <div class="tab-pane fade show active" id="desc-content" role="tabpanel">
+                    <div class="lh-lg text-dark">
+                        @if (!string.IsNullOrWhiteSpace(product.Description))
+                        {
+                            <p class="fs-6 mb-3 text-dark fw-medium" style="color: #111111 !important;">@product.Description</p>
+                        }
+                        else
+                        {
+                            <p class="text-dark" style="color: #111111 !important;">Bu məhsul üçün ətraflı məlumat tezliklə əlavə olunacaq.</p>
+                        }
+                        
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-3 border bg-light">
+                                    <h6 class="fw-bold text-dark mb-2">
+                                        <iconify-icon icon="solar:star-bold" class="text-warning me-1 align-middle"></iconify-icon>
+                                        Niyə Bu Məhsulu Seçməlisiniz?
+                                    </h6>
+                                    <ul class="list-unstyled mb-0 text-muted small lh-lg">
+                                        <li>✓ Ev heyvanınızın sağlamlığı və rahatlığı üçün xüsusi seçilib</li>
+                                        <li>✓ Yüksək keyfiyyətli və zərərsiz materiallardan hazırlanıb</li>
+                                        <li>✓ Veterinar və mütəxəssislər tərəfindən tövsiyə olunan standartlara cavab verir</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-3 border bg-light">
+                                    <h6 class="fw-bold text-dark mb-2">
+                                        <iconify-icon icon="solar:heart-angle-bold" class="text-danger me-1 align-middle"></iconify-icon>
+                                        Qayğı və İstifadə
+                                    </h6>
+                                    <ul class="list-unstyled mb-0 text-muted small lh-lg">
+                                        <li>✓ Məhsulu quru və sərin yerdə saxlayın</li>
+                                        <li>✓ İstifadə qaydalarına və qablaşdırma üzərindəki təlimatlara əməl edin</li>
+                                        <li>✓ Hər hansı sualınız yaranarsa, bizimlə 7/24 əlaqə saxlaya bilərsiniz</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Specifications -->
+                <div class="tab-pane fade" id="spec-content" role="tabpanel">
+                    <div class="table-responsive col-12 col-lg-8">
+                        <table class="table table-bordered table-striped mb-0 align-middle">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light w-25">Məhsul Adı</th>
+                                    <td>@product.Name</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Kateqoriya</th>
+                                    <td>@(product.ProductCategory?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Brend</th>
+                                    <td>@(product.Brand?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">SKU Kodu</th>
+                                    <td>@(string.IsNullOrEmpty(product.Sku) ? "-" : product.Sku)</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Stok Statusu</th>
+                                    <td>
+                                        @if (isOutOfStock)
+                                        {
+                                            <span class="text-danger fw-semibold">Tükənib</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success fw-semibold">Mövcuddur (@product.StockQuantity ədəd)</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Uyğun Heyvanlar</th>
+                                    <td>
+                                        @if (product.ProductAnimalTypes != null && product.ProductAnimalTypes.Any())
+                                        {
+                                            <span>@string.Join(", ", product.ProductAnimalTypes.Select(p => p.AnimalType.Name))</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Bütün ev heyvanları</span>
+                                        }
+                                    </td>
+                                </tr>
+                                @if (product.Variants != null && product.Variants.Any())
+                                {
+                                    <tr>
+                                        <th class="bg-light">Mövcud Variantlar</th>
+                                        <td>@product.Variants.Count fərqli ölçü / variant</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Shipping & Returns -->
+                <div class="tab-pane fade" id="ship-content" role="tabpanel">
+                    <div class="row g-4 lh-lg text-dark">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold text-dark mb-3">Shipping Policy</h5>
+                            <p class="mb-2"><strong>Standard Delivery:</strong> Free shipping on orders over 50 ₼! For orders under 50 ₼, a standard flat fee of 4.99 ₼ applies.</p>
+                            <p class="mb-2"><strong>Delivery Time:</strong> Once confirmed, orders are dispatched within 24 hours to your designated address.</p>
+                            <p class="mb-0"><strong>Regional Shipping:</strong> Delivered within 2-3 business days across all regions via reliable couriers.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="fw-bold text-dark mb-3">Returns & Exchanges</h5>
+                            <p class="mb-2">Items in original unused condition with packaging intact can be returned or exchanged within <strong>14 days</strong>.</p>
+                            <p class="mb-0">To initiate a return, contact our support team or request it directly from your Account Dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Customer Reviews & Ratings -->
+                <div class="tab-pane fade" id="reviews-content" role="tabpanel">
+                    <div class="row g-4 g-lg-5">
+                        <!-- Left: Rating Summary & Breakdown -->
+                        <div class="col-lg-4">
+                            <div class="p-4 rounded-4 border bg-light h-100">
+                                <h5 class="fw-bold text-dark mb-3">Customer Feedback</h5>
+                                <div class="d-flex align-items-baseline gap-2 mb-2">
+                                    <span class="display-4 fw-bold text-primary" id="reviewSummaryAverage">@Model.AverageRating.ToString("0.0")</span>
+                                    <span class="text-muted fs-5">/ 5.0</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 text-warning mb-2 fs-5">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(Model.AverageRating))
+                                        {
+                                            <iconify-icon icon="clarity:star-solid"></iconify-icon>
+                                        }
+                                        else
+                                        {
+                                            <iconify-icon icon="clarity:star-line" class="text-muted opacity-50"></iconify-icon>
+                                        }
+                                    }
+                                </div>
+                                <p class="text-muted small mb-4">Based on <span id="reviewSummaryCount">@Model.TotalReviews</span> customer review@(Model.TotalReviews != 1 ? "s" : "")</p>
+
+                                <!-- Star Breakdown Bars -->
+                                <div class="d-flex flex-column gap-2 mb-3">
+                                    @for (int star = 5; star >= 1; star--)
+                                    {
+                                        var count = Model.RatingCounts.ContainsKey(star) ? Model.RatingCounts[star] : 0;
+                                        var pct = Model.TotalReviews > 0 ? (int)Math.Round((double)count / Model.TotalReviews * 100) : 0;
+                                        <div class="d-flex align-items-center gap-2 small">
+                                            <span class="text-nowrap" style="width: 55px;">@star Stars</span>
+                                            <div class="progress flex-grow-1" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: @pct%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <span class="text-muted text-end" style="width: 30px;">@count</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="mt-4 pt-3 border-top">
+                                    <div class="d-flex align-items-center gap-2 text-success small fw-semibold">
+                                        <iconify-icon icon="solar:shield-check-bold" class="fs-5"></iconify-icon>
+                                        <span>Verified Buyer Reviews Only</span>
+                                    </div>
+                                    <p class="text-muted small mt-1 mb-0 lh-sm">To ensure 100% authentic feedback, only customers who placed an order for this product can write a review.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Review Form & Review List -->
+                        <div class="col-lg-8">
+                            <!-- REVIEW SUBMISSION SECTION (Open for all users, verified badge for buyers) -->
+                            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background: #FAF7F2;" id="reviewFormContainer">
+                                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                    <h5 class="fw-bold text-dark mb-0" id="reviewFormTitle">
+                                        @(Model.AlreadyReviewed ? "Ulduz və Rəyinizi Yeniləyin" : "Məhsula Ulduz Ver və Rəy Yaz")
+                                    </h5>
+                                    @if (Model.HasPurchased)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 small">
+                                            <iconify-icon icon="solar:check-circle-bold" class="align-middle me-1"></iconify-icon> Sifariş Təsdiqlənib (Verified Buyer)
+                                        </span>
+                                    }
+                                </div>
+
+                                <form id="productReviewForm" onsubmit="submitProductReview(event); return false;">
+                                    <input type="hidden" id="reviewProductId" value="@product.Id" />
+                                    <input type="hidden" id="reviewSelectedRating" value="@(Model.UserReview?.Rating ?? 5)" />
+
+                                    <!-- Star Picker with pure SVG stars -->
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-dark mb-1">Xalınız (Ulduza toxunaraq xal verin):</label>
+                                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                                            <div class="star-rating-picker d-flex gap-1 align-items-center" id="starRatingPicker">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    var isFilled = i <= (Model.UserReview?.Rating ?? 5);
+                                                    <button type="button"
+                                                            class="star-btn p-1 border-0 bg-transparent"
+                                                            data-rating="@i"
+                                                            onclick="setStarRating(@i)"
+                                                            onmouseenter="previewStarRating(@i)"
+                                                            onmouseleave="resetStarRating()"
+                                                            style="cursor: pointer; line-height: 1; transition: transform 0.15s ease;"
+                                                            title="@i ulduz">
+                                                        <svg class="star-svg" width="34" height="34" viewBox="0 0 24 24" fill="@(isFilled ? "#f59e0b" : "#cbd5e1")" style="transition: fill 0.15s ease;">
+                                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                                        </svg>
+                                                    </button>
+                                                }
+                                            </div>
+                                            <span class="fw-bold text-dark fs-6" id="starRatingLabel">
+                                                @((Model.UserReview?.Rating ?? 5) switch
+                                                {
+                                                    5 => "5 Ulduz - Əla!",
+                                                    4 => "4 Ulduz - Çox Yaxşı",
+                                                    3 => "3 Ulduz - Orta",
+                                                    2 => "2 Ulduz - Qənaətbəxş",
+                                                    _ => "1 Ulduz - Zəif"
+                                                })
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    @if (!Model.IsUserLoggedIn)
+                                    {
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-sm-6">
+                                                <label class="form-label small fw-bold text-dark mb-1">Adınız / Ləqəbiniz:</label>
+                                                <input type="text" id="reviewCustomerName" class="form-control rounded-3" placeholder="Məs: Əli Məmmədov" required />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label class="form-label small fw-bold text-dark mb-1">E-poçt (istəyə bağlı):</label>
+                                                <input type="email" id="reviewCustomerEmail" class="form-control rounded-3" placeholder="musteri@example.com" />
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- Comment textarea (optional) -->
+                                    <div class="mb-3">
+                                        <label for="reviewCommentText" class="form-label small fw-bold text-dark mb-1">Fikirləriniz və Təcrübəniz (istəyə bağlı):</label>
+                                        <textarea id="reviewCommentText"
+                                                  class="form-control rounded-3 p-3"
+                                                  rows="3"
+                                                  maxlength="2000"
+                                                  placeholder="Məhsul haqqında rəyinizi qeyd edə bilərsiniz...">@(Model.UserReview?.Comment ?? "")</textarea>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        @if (Model.IsUserLoggedIn)
+                                        {
+                                            <small class="text-muted">Paylaşan: <strong class="text-dark">@Model.CurrentUserName</strong></small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">Hesabınız var? <a href="/Account/Login?returnUrl=/product/@product.Id" class="text-primary fw-semibold">Daxil olun</a></small>
+                                        }
+                                        <button type="submit" id="submitReviewBtn" class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-2 shadow-sm">
+                                            <span id="submitReviewBtnText">@(Model.AlreadyReviewed ? "Ulduzu Yenilə" : "Ulduzu Göndər")</span>
+                                        </button>
+                                    </div>
+
+                                    <div id="reviewAlertMsg" class="mt-3 d-none"></div>
+                                </form>
+                            </div>
+
+                            <!-- LIST OF REVIEWS -->
+                            <div class="reviews-list-container">
+                                <h5 class="fw-bold text-dark mb-4">Customer Reviews (<span id="reviewsHeaderCount">@Model.TotalReviews</span>)</h5>
+
+                                @if (Model.Reviews != null && Model.Reviews.Any())
+                                {
+                                    <div class="d-flex flex-column gap-3" id="reviewsList">
+                                        @foreach (var rev in Model.Reviews)
+                                        {
+                                            var initial = !string.IsNullOrWhiteSpace(rev.CustomerName) ? rev.CustomerName.Trim().Substring(0, 1).ToUpper() : "U";
+                                            <div class="card border rounded-3 p-3 p-md-4 shadow-none">
+                                                <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; min-width: 44px; font-size: 1.1rem;">
+                                                            @initial
+                                                        </div>
+                                                        <div>
+                                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                                <h6 class="fw-bold text-dark mb-0">@rev.CustomerName</h6>
+                                                                @if (rev.IsVerifiedPurchase)
+                                                                {
+                                                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-0 small" style="font-size: 0.72rem;">
+                                                                        <iconify-icon icon="solar:check-circle-bold" class="align-middle me-1"></iconify-icon>Verified Buyer
+                                                                    </span>
+                                                                }
+                                                            </div>
+                                                            <span class="text-muted small">@rev.CreatedAt.ToString("dd MMMM yyyy")</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex text-warning fs-6">
+                                                        @for (int s = 1; s <= 5; s++)
+                                                        {
+                                                            if (s <= rev.Rating)
+                                                            {
+                                                                <iconify-icon icon="clarity:star-solid"></iconify-icon>
+                                                            }
+                                                            else
+                                                            {
+                                                                <iconify-icon icon="clarity:star-line" class="text-muted opacity-50"></iconify-icon>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <p class="text-dark mb-0 mt-2 lh-base" style="color: #222222 !important;">
+                                                    @rev.Comment
+                                                </p>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center py-5 rounded-4 border bg-light" id="emptyReviewsPlaceholder">
+                                        <iconify-icon icon="solar:chat-square-dots-outline" class="display-3 text-muted mb-2"></iconify-icon>
+                                        <h6 class="fw-bold text-dark mb-1">No reviews yet</h6>
+                                        <p class="text-muted small mb-0">Be the first verified customer who ordered this product to leave a review!</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RELATED PRODUCTS SECTION -->
+        @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+        {
+            <div class="related-products-section mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="display-6 fs-3 fw-bold text-dark mb-0">Related Products</h2>
+                    <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4 btn-sm">
+                        View All <iconify-icon icon="solar:arrow-right-bold" class="align-middle ms-1"></iconify-icon>
+                    </a>
+                </div>
+
+                <div class="row g-4">
+                    @foreach (var related in Model.RelatedProducts)
+                    {
+                        var relImageObj = related.Images.FirstOrDefault(i => i.IsMain) ?? related.Images.FirstOrDefault();
+                        var relImgFileName = relImageObj?.ImageUrl;
+                        var relImgUrl = string.IsNullOrEmpty(relImgFileName)
+                            ? "/images/no-image.png"
+                            : (relImgFileName.StartsWith("/") ? relImgFileName : $"/images/{relImgFileName}");
+
+                        var relHasDiscount = related.DiscountPrice.HasValue && related.DiscountPrice.Value < related.Price;
+                        var relDiscountPercent = relHasDiscount ? Math.Round((1 - (related.DiscountPrice!.Value / related.Price)) * 100) : 0;
+                        var relIsNew = related.CreatedAt >= DateTime.UtcNow.AddDays(-14);
+                        var relOutOfStock = related.StockQuantity <= 0;
+                        var relWishlisted = Model.WishlistProductIds.Contains(related.Id);
+
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative product-card d-flex flex-column bg-white">
+                                
+                                <!-- Badges -->
+                                <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">
+                                    @if (relOutOfStock)
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-2 py-1 small">Tükənib</span>
+                                    }
+                                    else if (relHasDiscount)
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-2 py-1 small">-@relDiscountPercent%</span>
+                                    }
+                                    @if (relIsNew)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-2 py-1 small">Yeni</span>
+                                    }
+                                </div>
+
+                                <!-- Image Container -->
+                                <a href="/product/@related.Id" class="product-image-container d-block p-3 text-center bg-light" style="height: 200px;">
+                                    <img src="@relImgUrl"
+                                         class="img-fluid object-fit-contain h-100 w-100"
+                                         alt="@related.Name"
+                                         onerror="this.onerror=null;this.src='/images/no-image.png';" />
+                                </a>
+
+                                <!-- Card Body -->
+                                <div class="card-body p-3 d-flex flex-column flex-grow-1 justify-content-between">
+                                    <div>
+                                        <span class="text-muted small text-truncate d-block mb-1">
+                                            @(related.ProductCategory?.Name ?? "Ümumi")
+                                        </span>
+                                        <a href="/product/@related.Id" class="text-decoration-none text-dark">
+                                            <h6 class="fw-semibold text-truncate mb-2" title="@related.Name">
+                                                @related.Name
+                                            </h6>
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <div class="d-flex align-items-baseline gap-2 mb-3">
+                                            <span class="fw-bold text-primary fs-5">
+                                                @((related.DiscountPrice ?? related.Price).ToString("0.00")) ₼
+                                            </span>
+                                            @if (relHasDiscount)
+                                            {
+                                                <span class="text-muted text-decoration-line-through small">
+                                                    @related.Price.ToString("0.00") ₼
+                                                </span>
+                                            }
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            @if (relOutOfStock)
+                                            {
+                                                <button class="btn btn-sm btn-secondary rounded-pill flex-grow-1 disabled" disabled>
+                                                    Tükənib
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-primary rounded-pill flex-grow-1 py-2 fw-semibold"
+                                                        onclick="AddToBasket(@related.Id); return false;">
+                                                    <iconify-icon icon="mdi:cart" class="align-middle me-1"></iconify-icon> Səbətə
+                                                </button>
+                                            }
+                                            <button type="button"
+                                                    class="btn btn-sm btn-wishlist-circle p-0 d-flex align-items-center justify-content-center @(relWishlisted ? "wishlisted" : "")"
+                                                    style="width: 36px; height: 36px; flex-shrink: 0; @(relWishlisted ? "border-color: #ff0000 !important;" : "")"
+                                                    data-product-id="@related.Id"
+                                                    onclick="toggleWishlist(this, @related.Id); return false;"
+                                                    title="@(relWishlisted ? "İstək siyahısından çıxar" : "İstək siyahısına əlavə et")">
+                                                <iconify-icon icon="fluent:heart-28-filled" style="@(relWishlisted ? "color: #ff0000 !important;" : "color: #000000 !important;")"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // State for active variant & price
+        let basePrice = @((product.DiscountPrice ?? product.Price).ToString(System.Globalization.CultureInfo.InvariantCulture));
+        let baseOldPrice = @(hasDiscount ? product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) : "0");
+        let selectedVariantId = @(hasVariants && firstVariant != null ? firstVariant.Id.ToString() : "null");
+        let maxStock = @Math.Max(1, product.StockQuantity);
+
+        function changeMainImage(url, el) {
+            const mainImg = document.getElementById("mainProductImage");
+            if (mainImg) {
+                mainImg.src = url;
+            }
+            document.querySelectorAll(".thumbnail-item").forEach(item => {
+                item.classList.remove("border-primary", "shadow-sm", "active-thumb");
+            });
+            if (el) {
+                el.classList.add("border-primary", "shadow-sm", "active-thumb");
+            }
+        }
+
+        function selectVariant(btn, variantId, modifier) {
+            document.querySelectorAll(".variant-btn").forEach(b => {
+                b.classList.remove("active", "btn-dark");
+                b.classList.add("btn-outline-dark");
+            });
+            btn.classList.add("active", "btn-dark");
+            btn.classList.remove("btn-outline-dark");
+
+            selectedVariantId = variantId ? parseInt(variantId) : null;
+            const numericModifier = parseFloat(modifier) || 0;
+            const newPrice = (basePrice + numericModifier).toFixed(2);
+
+            const priceDisplay = document.getElementById("displayedProductPrice");
+            if (priceDisplay) {
+                priceDisplay.innerText = newPrice + " ₼";
+            }
+
+            if (baseOldPrice > 0) {
+                const oldDisplay = document.getElementById("displayedOldPrice");
+                if (oldDisplay) {
+                    oldDisplay.innerText = (baseOldPrice + numericModifier).toFixed(2) + " ₼";
+                }
+            }
+        }
+
+        async function executeAddToCart(productId) {
+            const qtyInput = document.getElementById("productQuantityInput");
+            const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+            const btn = document.getElementById("addToCartMainBtn");
+
+            const originalContent = btn ? btn.innerHTML : "";
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Əlavə edilir...`;
+            }
+
+            try {
+                if (window.addToBasket) {
+                    await window.addToBasket(productId, selectedVariantId, quantity);
+                } else if (window.AddToBasket) {
+                    await window.AddToBasket(productId, selectedVariantId, quantity);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                }
+            }
+        }
+
+        // ==========================================
+        // CUSTOMER REVIEW & RATING INTERACTION
+        // ==========================================
+        // CUSTOMER REVIEW & RATING INTERACTION
+        // ==========================================
+        const starLabels = {
+            1: "1 Ulduz - Zəif",
+            2: "2 Ulduz - Qənaətbəxş",
+            3: "3 Ulduz - Orta",
+            4: "4 Ulduz - Çox Yaxşı",
+            5: "5 Ulduz - Əla!"
+        };
+
+        function switchToReviewsTab(focusRating = false) {
+            const tabBtn = document.getElementById('reviews-tab');
+            if (tabBtn) {
+                if (window.bootstrap && bootstrap.Tab) {
+                    const tabInstance = bootstrap.Tab.getOrCreateInstance(tabBtn);
+                    tabInstance.show();
+                } else {
+                    tabBtn.click();
+                }
+            }
+            const formCard = document.getElementById('reviewFormContainer') || document.getElementById('productTabsCard');
+            if (formCard) {
+                formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            if (focusRating) {
+                const commentBox = document.getElementById('reviewCommentText');
+                if (commentBox) {
+                    setTimeout(() => commentBox.focus(), 600);
+                }
+            }
+        }
+
+        function renderStarIcons(rating) {
+            const picker = document.getElementById("starRatingPicker");
+            if (!picker) return;
+            const stars = picker.querySelectorAll(".star-btn");
+            stars.forEach(btn => {
+                const starNum = parseInt(btn.getAttribute("data-rating"));
+                const svg = btn.querySelector("svg");
+                if (svg) {
+                    if (starNum <= rating) {
+                        svg.setAttribute("fill", "#f59e0b");
+                        btn.style.transform = starNum === rating ? "scale(1.15)" : "scale(1)";
+                    } else {
+                        svg.setAttribute("fill", "#cbd5e1");
+                        btn.style.transform = "scale(1)";
+                    }
+                }
+            });
+        }
+
+        function previewStarRating(rating) {
+            renderStarIcons(rating);
+            const label = document.getElementById("starRatingLabel");
+            if (label && starLabels[rating]) {
+                label.innerText = starLabels[rating];
+            }
+        }
+
+        function resetStarRating() {
+            const input = document.getElementById("reviewSelectedRating");
+            const currentRating = input ? (parseInt(input.value) || 5) : 5;
+            renderStarIcons(currentRating);
+            const label = document.getElementById("starRatingLabel");
+            if (label && starLabels[currentRating]) {
+                label.innerText = starLabels[currentRating];
+            }
+        }
+
+        function setStarRating(rating) {
+            const input = document.getElementById("reviewSelectedRating");
+            if (input) {
+                input.value = rating;
+            }
+            renderStarIcons(rating);
+            const label = document.getElementById("starRatingLabel");
+            if (label && starLabels[rating]) {
+                label.innerText = starLabels[rating];
+            }
+        }
+
+        async function submitProductReview(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const productIdInput = document.getElementById("reviewProductId");
+            const ratingInput = document.getElementById("reviewSelectedRating");
+            const commentInput = document.getElementById("reviewCommentText");
+            const nameInput = document.getElementById("reviewCustomerName");
+            const emailInput = document.getElementById("reviewCustomerEmail");
+            const submitBtn = document.getElementById("submitReviewBtn");
+            const submitBtnText = document.getElementById("submitReviewBtnText");
+            const alertMsg = document.getElementById("reviewAlertMsg");
+
+            if (!productIdInput || !ratingInput) return;
+
+            const productId = parseInt(productIdInput.value);
+            const rating = parseInt(ratingInput.value) || 5;
+            const comment = commentInput ? commentInput.value.trim() : "";
+            const customerName = nameInput ? nameInput.value.trim() : "";
+            const customerEmail = emailInput ? emailInput.value.trim() : "";
+
+            if (rating < 1 || rating > 5) {
+                if (alertMsg) {
+                    alertMsg.className = "alert alert-warning py-2 px-3 small mt-3";
+                    alertMsg.innerText = "Zəhmət olmasa 1-dən 5-ə qədər ulduz seçin.";
+                    alertMsg.classList.remove("d-none");
+                }
+                return;
+            }
+
+            if (submitBtn) submitBtn.disabled = true;
+            if (submitBtnText) submitBtnText.innerText = "Göndərilir...";
+            if (alertMsg) alertMsg.classList.add("d-none");
+
+            try {
+                const response = await fetch('/product/review', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        rating: rating,
+                        comment: comment,
+                        customerName: customerName,
+                        customerEmail: customerEmail
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    if (alertMsg) {
+                        alertMsg.className = "alert alert-success py-2 px-3 small mt-3 d-flex align-items-center gap-2";
+                        alertMsg.innerHTML = `<iconify-icon icon="solar:check-circle-bold" class="fs-5"></iconify-icon> <span>${data.message || "Təşəkkür edirik! Ulduz və rəyiniz qeydə alındı."}</span>`;
+                        alertMsg.classList.remove("d-none");
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    if (alertMsg) {
+                        alertMsg.className = "alert alert-danger py-2 px-3 small mt-3 d-flex align-items-center gap-2";
+                        alertMsg.innerHTML = `<iconify-icon icon="solar:danger-triangle-bold" class="fs-5"></iconify-icon> <span>${data.message || "Ulduz qeydə alınarkən xəta baş verdi."}</span>`;
+                        alertMsg.classList.remove("d-none");
+                    }
+                }
+            } catch (err) {
+                console.error("Review submission error:", err);
+                if (alertMsg) {
+                    alertMsg.className = "alert alert-danger py-2 px-3 small mt-3";
+                    alertMsg.innerText = "Şəbəkə xətası baş verdi. Zəhmət olmasa yenidən cəhd edin.";
+                    alertMsg.classList.remove("d-none");
+                }
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+                if (submitBtnText) submitBtnText.innerText = "Ulduzu Göndər";
+            }
+        }
+    </script>
+}

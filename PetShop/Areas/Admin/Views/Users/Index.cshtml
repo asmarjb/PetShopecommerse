@@ -1,0 +1,128 @@
+@model IEnumerable<PetShop.DataContext.Entites.AdminUser>
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <div class="page-heading-copy">
+                <span class="page-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+                <div>
+                    <p class="eyebrow mb-1">User Management</p>
+                    <h1 class="h3 mb-1">Admin Users</h1>
+                    <p class="text-muted mb-0">View and manage system administrators.</p>
+                </div>
+            </div>
+            <div class="heading-actions">
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i> Add New User
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <section class="panel mt-4">
+            <div class="panel-header">
+                <div>
+                    <h2 class="h5 mb-1 section-title">All Users</h2>
+                    <p class="text-muted mb-0">A complete list of all registered admin accounts.</p>
+                </div>
+                <div class="input-group input-group-sm" style="max-width: 250px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search users...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">User</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Joined Date</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-img avatar-sm bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
+                                                @(string.IsNullOrEmpty(user.FullName) ? "U" : user.FullName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div>
+                                                <p class="fw-semibold mb-0">@user.FullName</p>
+                                                <p class="text-muted small mb-0">@user.Email</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Admin</td>
+                                    <td>
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="badge text-bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge text-bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/Admin/Users/Edit/@user.Id" class="btn btn-light" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" asp-action="Delete" asp-route-id="@user.Id" class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to delete @user.FullName? This cannot be undone.');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-light text-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    No users found in the system.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer border-top p-3 d-flex align-items-center justify-content-between">
+                <span class="text-muted small">Showing all @Model?.Count() users</span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+    </div>
+</main>

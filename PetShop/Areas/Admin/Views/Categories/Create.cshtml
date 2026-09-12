@@ -1,0 +1,97 @@
+@model PetShop.DataContext.Entites.ProductCategory
+@{ ViewData["Title"] = "Create Category"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <h1 class="h3 mb-0">Create Category</h1>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
+        </div>
+
+        <section class="panel mt-4" style="max-width: 650px;">
+            <div class="panel-body p-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger mb-3 py-2"></div>
+                    }
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" id="categoryNameInput" placeholder="məs: Quş Yemi" required />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Slug" class="form-label fw-semibold">Slug (URL)</label>
+                        <input asp-for="Slug" class="form-control" id="categorySlugInput" placeholder="məs: qus-yemi (boş buraxsanız avtomatik yaranacaq)" />
+                        <span asp-validation-for="Slug" class="text-danger small"></span>
+                        <small class="text-muted">Boş buraxsanız kateqoriya adından avtomatik yaradılacaq.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ParentCategoryId" class="form-label fw-semibold">Parent Category (Ana Kateqoriya)</label>
+                        <select asp-for="ParentCategoryId" class="form-select" asp-items="ViewBag.ParentCategories">
+                            <option value="">-- Əsas Kateqoriya (Parent yoxdur) --</option>
+                        </select>
+                        <small class="text-muted">Əgər bu alt kateqoriyadırsa, ana kateqoriyanı seçin.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="IconClass" class="form-label fw-semibold">Icon Class</label>
+                        <input asp-for="IconClass" class="form-control" placeholder="məs: bi bi-tag və ya ph:bowl-food" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Category Image</label>
+                        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                        <small class="text-muted">Kateqoriya üçün şəkil yükləyin (istəyə bağlı).</small>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">Create Category</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-3">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const nameInput = document.getElementById("categoryNameInput");
+            const slugInput = document.getElementById("categorySlugInput");
+            let isSlugManuallyEdited = false;
+
+            if (slugInput) {
+                slugInput.addEventListener("input", function () {
+                    isSlugManuallyEdited = slugInput.value.trim().length > 0;
+                });
+            }
+
+            if (nameInput && slugInput) {
+                nameInput.addEventListener("input", function () {
+                    if (!isSlugManuallyEdited) {
+                        let val = nameInput.value.toLowerCase().trim();
+                        val = val.replace(/ə/g, "e")
+                                 .replace(/ı/g, "i")
+                                 .replace(/ö/g, "o")
+                                 .replace(/ğ/g, "g")
+                                 .replace(/ç/g, "c")
+                                 .replace(/ş/g, "s")
+                                 .replace(/ü/g, "u");
+                        val = val.replace(/[^a-z0-9\s-]/g, "")
+                                 .replace(/[\s-]+/g, "-")
+                                 .replace(/^-+|-+$/g, "");
+                        slugInput.value = val;
+                    }
+                });
+            }
+        });
+    </script>
+}

@@ -1,226 +1,210 @@
-﻿<section id="cart" class="my-5 py-5">
-    <div class="container">
-        <div class="row g-md-5">
-            <div class="col-md-8 pe-md-5">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="card-title text-uppercase">Product</th>
-                            <th scope="col" class="card-title text-uppercase">Quantity</th>
-                            <th scope="col" class="card-title text-uppercase">Subtotal</th>
-                            <th scope="col" class="card-title text-uppercase"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td scope="row" class="py-4">
-                                <div class="cart-info d-flex flex-wrap align-items-center ">
-                                    <div class="col-lg-3">
-                                        <div class="card-image">
-                                            <img src="~/images/item1.jpg" alt="cloth" class="img-fluid">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="card-detail ps-3">
-                                            <h5 class="card-title">
-                                                <a href="#" class="text-decoration-none">Grey Hoodie</a>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="input-group product-qty align-items-center w-50">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#minus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                    <input type="text" id="quantity" name="quantity"
-                                           class="form-control input-number text-center p-2 mx-1" value="1">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-right-plus btn btn-light btn-number" data-type="plus"
-                                                data-field="">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#plus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="total-price">
-                                    <span class="secondary-font fw-medium">$150.00</span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="cart-remove">
-                                    <a href="#">
-                                        <svg width="24" height="24">
-                                            <use xlink:href="#trash"></use>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row" class="py-4">
-                                <div class="cart-info d-flex flex-wrap align-items-center ">
-                                    <div class="col-lg-3">
-                                        <div class="card-image">
-                                            <img src="~/images/item9.jpg" alt="cloth" class="img-fluid">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="card-detail ps-3">
-                                            <h5 class="card-title">
-                                                <a href="#" class="text-decoration-none">Dog Food</a>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="input-group product-qty align-items-center w-50">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#minus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                    <input type="text" id="quantity" name="quantity"
-                                           class="form-control input-number text-center p-2 mx-1" value="1">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-right-plus btn btn-light btn-number" data-type="plus"
-                                                data-field="">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#plus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="total-price">
-                                    <span class="secondary-font fw-medium">$90.00</span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="cart-remove">
-                                    <a href="#">
-                                        <svg width="24" height="24">
-                                            <use xlink:href="#trash"></use>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row" class="py-4">
-                                <div class="cart-info d-flex flex-wrap align-items-center ">
-                                    <div class="col-lg-3">
-                                        <div class="card-image">
-                                            <img src="~/images/item5.jpg" alt="cloth" class="img-fluid">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="card-detail ps-3">
-                                            <h5 class="card-title">
-                                                <a href="#" class="text-decoration-none">Cat Home</a>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="input-group product-qty align-items-center w-50">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#minus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                    <input type="text" id="quantity" name="quantity"
-                                           class="form-control input-number text-center p-2 mx-1" value="1">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-right-plus btn btn-light btn-number" data-type="plus"
-                                                data-field="">
-                                            <svg width="16" height="16">
-                                                <use xlink:href="#plus"></use>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="total-price">
-                                    <span class="secondary-font fw-medium">$260.00</span>
-                                </div>
-                            </td>
-                            <td class="py-4 align-middle">
-                                <div class="cart-remove">
-                                    <a href="#">
-                                        <svg width="24" height="24">
-                                            <use xlink:href="#trash"></use>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+@model PetShopEcommerse.Models.BasketViewModel
+@{
+    ViewData["Title"] = "S&#601;b&#601;t";
+}
 
-                    </tbody>
-                </table>
+<section id="cart" class="my-5 py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h1 class="display-4 fw-normal">S&#601;b&#601;tiniz</h1>
             </div>
-            <div class="col-md-4">
-                <div class="cart-totals">
-                    <h2 class="pb-4">Cart Total</h2>
-                    <div class="total-price pb-4">
-                        <table cellspacing="0" class="table text-uppercase">
-                            <tbody>
-                                <tr class="subtotal pt-2 pb-2 border-top border-bottom">
-                                    <th>Subtotal</th>
-                                    <td data-title="Subtotal">
-                                        <span class="price-amount amount text-dark ps-5">
-                                            <bdi>
-                                                <span class="price-currency-symbol">$</span>1,500.00
-                                            </bdi>
+        </div>
+
+        <div id="BasketEmptyContainer" class="@(Model.IsEmpty ? "" : "d-none") text-center py-5">
+            <iconify-icon icon="mdi:cart-off" class="display-1 text-muted mb-3"></iconify-icon>
+            <h3 class="fw-normal mb-3">S&#601;b&#601;tinizdə hazırda heç bir M&#601;hsul yoxdur</h3>
+            <p class="text-muted mb-4">Bəyəndiyiniz M&#601;hsulları S&#601;b&#601;tə əlavə edərək alış-verişə davam edə bilərsiniz.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg rounded-1 px-5 py-3">Al&#305;&#351;-veri&#351;&#601; davam et</a>
+        </div>
+
+        <div id="BasketContentContainer" class="row g-md-5 @(Model.IsEmpty ? "d-none" : "")">
+            <div class="col-lg-8 pe-lg-5">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="border-bottom text-uppercase fs-6">
+                                <th scope="col" class="py-3">M&#601;hsul</th>
+                                <th scope="col" class="py-3 text-center" style="width: 170px;">Say</th>
+                                <th scope="col" class="py-3 text-end">C&#601;mi</th>
+                                <th scope="col" class="py-3 text-center" style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="BasketTableBody">
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr id="basket-row-@item.CartItemId" class="border-bottom">
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <a href="/product/@item.ProductId">
+                                                <img src="@item.ProductImagePath" alt="@item.ProductName"
+                                                     class="rounded-3 border me-3"
+                                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                            </a>
+                                            <div>
+                                                <h5 class="card-title mb-1">
+                                                    <a href="/product/@item.ProductId" class="text-decoration-none text-dark">@item.ProductName</a>
+                                                </h5>
+                                                @if (!string.IsNullOrEmpty(item.VariantLabel))
+                                                {
+                                                    <span class="badge bg-light text-dark border me-1">@item.VariantLabel</span>
+                                                }
+                                                <div class="text-dark small mt-1">
+                                                    Qiym&#601;t: <strong class="text-dark">@item.UnitPrice.ToString("0.00")&#8380;</strong>
+                                                </div>
+                                                @if (item.HasPriceChanged)
+                                                {
+                                                    <div class="text-warning small mt-1">
+                                                        <iconify-icon icon="mdi:alert-circle-outline"></iconify-icon>
+                                                        Cari mağaza Qiym&#601;ti: @item.CurrentPrice.ToString("0.00")&#8380;
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-center">
+                                        <div class="qty-stepper d-inline-flex align-items-center justify-content-center border rounded-2 bg-white shadow-sm" style="height: 36px;">
+                                            <button type="button" class="btn btn-link text-dark p-0 d-flex align-items-center justify-content-center border-0"
+                                                    style="width: 30px; height: 100%; text-decoration: none;"
+                                                    onclick="updateQuantity(@item.CartItemId, @(item.Quantity - 1))"
+                                                    title="Azalt">
+                                                <iconify-icon icon="mdi:minus" class="fs-6"></iconify-icon>
+                                            </button>
+                                            <input type="number" min="1" max="@(item.Quantity + item.AvailableStock)"
+                                                   value="@item.Quantity"
+                                                   class="form-control border-0 text-center p-0 fw-bold qty-input"
+                                                   style="width: 36px; height: 100%; box-shadow: none; background: transparent; font-size: 0.95rem;"
+                                                   id="qty-input-@item.CartItemId"
+                                                   onchange="updateQuantity(@item.CartItemId, parseInt(this.value) || 1)">
+                                            <button type="button" class="btn btn-link text-dark p-0 d-flex align-items-center justify-content-center border-0"
+                                                    style="width: 30px; height: 100%; text-decoration: none;"
+                                                    onclick="updateQuantity(@item.CartItemId, @(item.Quantity + 1))"
+                                                    title="Art&#305;r">
+                                                <iconify-icon icon="mdi:plus" class="fs-6"></iconify-icon>
+                                            </button>
+                                        </div>
+                                        @if (item.AvailableStock > 0 && item.AvailableStock < 5)
+                                        {
+                                            <div class="text-danger small fw-bold mt-2 d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="mdi:fire" class="me-1 fs-5"></iconify-icon>
+                                                Alma&#287;a t&#601;l&#601;sin! C&#601;mi @item.AvailableStock &#601;d&#601;d qald&#305;!
+                                            </div>
+                                        }
+                                        else if (item.AvailableStock == 0)
+                                        {
+                                            <div class="text-danger small fw-bold mt-2 d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="mdi:alert-circle" class="me-1 fs-5"></iconify-icon>
+                                                T&#252;k&#601;nib!
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="py-4 text-end">
+                                        <span class="fs-5 fw-bold text-dark" id="subtotal-@item.CartItemId">
+                                            @item.TotalPrice.ToString("0.00")&#8380;
                                         </span>
                                     </td>
-                                </tr>
-                                <tr class="order-total pt-2 pb-2 border-bottom">
-                                    <th>Total</th>
-                                    <td data-title="Total">
-                                        <span class="price-amount amount text-dark ps-5">
-                                            <bdi>
-                                                <span class="price-currency-symbol">$</span>1,500.00
-                                            </bdi>
-                                        </span>
+                                    <td class="py-4 text-center">
+                                        <button type="button" class="btn btn-link text-danger p-0 border-0"
+                                                onclick="removeFromCart(@item.CartItemId)"
+                                                title="S&#601;b&#601;tdən sil">
+                                            <iconify-icon icon="mdi:trash-can-outline" class="fs-4"></iconify-icon>
+                                        </button>
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="button-wrap row g-2">
-                        <div class="col-md-6">
-                            <button class="btn btn-dark btn-lg rounded-1 fs-6 p-3 w-100">Update Cart</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-dark btn-lg rounded-1 fs-6 p-3 w-100">
-                                Continue To
-                                Shop
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark rounded-1 p-3">
+                        <iconify-icon icon="mdi:arrow-left" class="me-1"></iconify-icon> Al&#305;&#351;-veri&#351;&#601; davam et
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <div class="cart-totals p-4 rounded-3 bg-light border">
+                    <h3 class="pb-3 border-bottom text-dark fw-bold">Sifari&#351; x&#252;las&#601;si</h3>
+
+                    <!-- Endirim Kuponu bölməsi -->
+                    <div class="coupon-section mb-3 p-3 bg-white rounded border">
+                        <label class="form-label fw-semibold text-dark small mb-2">Endirim Kuponu</label>
+                        <div id="IndexCouponAppliedBox" class="@(!string.IsNullOrEmpty(Model.AppliedCouponCode) ? "" : "d-none") d-flex align-items-center justify-content-between p-2 rounded border" style="background-color: #e8f5e9; border-color: #a5d6a7 !important;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge text-white fw-bold px-2 py-1" style="background-color: #2e7d32; font-size: 0.8rem;" id="IndexAppliedCouponBadge">@Model.AppliedCouponCode</span>
+                                <span class="fw-bold small" style="color: #1b5e20;" id="IndexAppliedCouponText">
+                                    @(Model.DiscountPercent.HasValue ? $"%{Model.DiscountPercent.Value:0} endirim" : $"{Model.DiscountAmount:0.00} ₼ endirim")
+                                </span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="removeCoupon()" title="Kuponu l&#601;&#287;v et">
+                                <iconify-icon icon="mdi:close" class="align-middle"></iconify-icon> Sil
                             </button>
                         </div>
-                        <div class="col-md-12">
-                            <a href="checkout.html"
-                               class="btn btn-primary p-3 text-uppercase rounded-1 w-100">Proceed to checkout</a>
+                        <div id="IndexCouponInputBox" class="@(string.IsNullOrEmpty(Model.AppliedCouponCode) ? "" : "d-none")">
+                            <div class="input-group">
+                                <input type="text" class="form-control text-uppercase ps-3 text-dark fw-medium" 
+                                       placeholder="Kupon kodu daxil edin" 
+                                       id="IndexCouponCodeInput"
+                                       style="font-size: 0.875rem; letter-spacing: 0.5px;">
+                                <button class="btn btn-dark px-3 text-nowrap" 
+                                        type="button" 
+                                        onclick="applyCoupon('IndexCouponCodeInput')"
+                                        style="font-size: 0.85rem; font-weight: 500;">
+                                    T&#601;tbiq et
+                                </button>
+                            </div>
                         </div>
+                        <div id="IndexCouponMessage" class="small mt-1 d-none"></div>
+                    </div>
+
+                    <table class="table table-borderless my-3">
+                        <tbody>
+                            <tr>
+                                <th class="ps-0 text-dark fw-medium fs-6">Aral&#305;q c&#601;m:</th>
+                                <td class="text-end pe-0 fw-semibold text-dark fs-6" id="IndexSubtotal">@Model.TotalPrice.ToString("0.00")&#8380;</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0 text-dark fw-medium fs-6">&#199;atd&#305;r&#305;lma:</th>
+                                <td class="text-end pe-0 fw-semibold text-dark fs-6" id="IndexShippingStandard">@(Model.IsEmpty ? "0.00₼" : "4.99₼")</td>
+                            </tr>
+                            <tr id="IndexFreeShippingDiscountRow" class="@(Model.IsFreeShipping ? "" : "d-none")">
+                                <th class="ps-0 text-danger fw-medium fs-6" style="color: #e03131 !important;">50 AZN v&#601; yuxar&#305; sifari&#351;d&#601; karqo &#246;d&#601;ni&#351;siz:</th>
+                                <td class="text-end pe-0 fw-semibold text-danger fs-6" style="color: #e03131 !important;" id="IndexFreeShippingDiscount">-4.99₼</td>
+                            </tr>
+                            <tr id="IndexDiscountRow" class="@(Model.DiscountAmount > 0 ? "" : "d-none")">
+                                <th class="ps-0 small fw-semibold" style="color: #2e7d32;" id="IndexDiscountLabel">&#220;mumi endirim @(!string.IsNullOrEmpty(Model.AppliedCouponCode) ? $"({Model.AppliedCouponCode})" : ""):</th>
+                                <td class="text-end pe-0 fw-bold small" style="color: #2e7d32;" id="IndexDiscountAmount">-@Model.DiscountAmount.ToString("0.00")&#8380;</td>
+                            </tr>
+                            <tr class="border-top">
+                                <th class="ps-0 fs-5 text-dark fw-bold">&#220;mumi:</th>
+                                <td class="text-end pe-0 fs-4 fw-bold text-dark" id="IndexTotalPrice">@Model.FinalTotal.ToString("0.00")&#8380;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a asp-controller="Checkout" asp-action="Index" class="btn btn-primary p-3 text-uppercase rounded-1 fw-semibold">
+                            Sifari&#351;i r&#601;smil&#601;&#351;dir
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .qty-input[type=number] {
+        -moz-appearance: textfield;
+    }
+    .qty-stepper button:hover {
+        background-color: #f1f3f5;
+    }
+</style>
+

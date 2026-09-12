@@ -1,0 +1,136 @@
+@model PetShop.Models.ContactViewModel
+@{
+    ViewData["Title"] = "Əlaqə - Bizimlə Əlaqə Saxlayın";
+}
+
+<section class="contact-us py-5">
+    <div class="container my-4">
+        <div class="row mb-5">
+            <div class="col-12">
+                <h1 class="display-4 fw-normal">Bizimlə Əlaqə</h1>
+                <p class="text-muted">Suallarınız, təklifləriniz və ya sifarişlə bağlı hər hansı sualınız üçün bizə yazın.</p>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show p-3 rounded-3 shadow-sm mb-5" role="alert">
+                <div class="d-flex align-items-center">
+                    <iconify-icon icon="mdi:check-circle" class="fs-3 me-3 text-success"></iconify-icon>
+                    <div>
+                        <h5 class="alert-heading mb-1 fw-bold">Uğurlu!</h5>
+                        <p class="mb-0">@TempData["SuccessMessage"]</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bağla"></button>
+            </div>
+        }
+
+        <div class="row g-5">
+            <!-- Contact Information Side -->
+            <div class="contact-info col-lg-5">
+                <div class="p-4 p-lg-5 rounded-4 h-100" style="background: #FAF7F2;">
+                    <h3 class="fw-semibold text-dark mb-4">Əlaqə Məlumatları</h3>
+                    <p class="text-muted mb-4">Bizə zəng edə, e-poçt yaza və ya birbaşa mağazamıza yaxınlaşa bilərsiniz.</p>
+
+                    <div class="d-flex flex-column gap-4 mt-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-white rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0;">
+                                <iconify-icon icon="mdi:map-marker" class="fs-4 text-primary"></iconify-icon>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">Ünvanımız</h6>
+                                <p class="text-muted mb-0">@Model.StoreAddress</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-white rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0;">
+                                <iconify-icon icon="mdi:phone" class="fs-4 text-primary"></iconify-icon>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">Telefon Nömrələri</h6>
+                                <p class="mb-0">
+                                    <a href="tel:@Model.StorePhone1" class="text-decoration-none text-muted d-block">@Model.StorePhone1</a>
+                                    <a href="tel:@Model.StorePhone2" class="text-decoration-none text-muted d-block">@Model.StorePhone2</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-white rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0;">
+                                <iconify-icon icon="mdi:email-outline" class="fs-4 text-primary"></iconify-icon>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">E-poçt Ünvanı</h6>
+                                <p class="mb-0">
+                                    <a href="mailto:@Model.StoreEmail1" class="text-decoration-none text-muted d-block">@Model.StoreEmail1</a>
+                                    <a href="mailto:@Model.StoreEmail2" class="text-decoration-none text-muted d-block">@Model.StoreEmail2</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-white rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; flex-shrink: 0;">
+                                <iconify-icon icon="mdi:clock-outline" class="fs-4 text-primary"></iconify-icon>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">İş Saatlarımız</h6>
+                                <p class="text-muted mb-0">@Model.WorkingHours</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inquiry Form Side -->
+            <div class="inquiry-item col-lg-7">
+                <div class="p-4 p-lg-5 rounded-4 border shadow-sm">
+                    <h3 class="fw-semibold text-dark mb-2">Bizə Mesaj Göndərin</h3>
+                    <p class="text-muted mb-4">Aşağıdakı formu dolduraraq bizimlə dərhal əlaqə saxlaya bilərsiniz.</p>
+
+                    <form asp-controller="Contact" asp-action="Index" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-semibold small text-dark">Ad və Soyad *</label>
+                                <input asp-for="Name" class="form-control py-2 px-3 rounded-2" placeholder="Məs: Əli Əliyev" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold small text-dark">E-poçt Ünvanı *</label>
+                                <input asp-for="Email" type="email" class="form-control py-2 px-3 rounded-2" placeholder="ad@domain.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label fw-semibold small text-dark">Telefon Nömrəsi *</label>
+                                <input asp-for="Phone" class="form-control py-2 px-3 rounded-2" placeholder="+994 (50) 000 00 00" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Subject" class="form-label fw-semibold small text-dark">Mövzu *</label>
+                                <input asp-for="Subject" class="form-control py-2 px-3 rounded-2" placeholder="Məs: Sifariş haqqında" />
+                                <span asp-validation-for="Subject" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Message" class="form-label fw-semibold small text-dark">Mesajınız *</label>
+                                <textarea asp-for="Message" class="form-control py-2 px-3 rounded-2" rows="5" placeholder="Mesajınızı bura yazın..."></textarea>
+                                <span asp-validation-for="Message" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-dark btn-lg rounded-1 px-5 py-3 w-100 fw-semibold text-uppercase">
+                                    Mesajı Göndər
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

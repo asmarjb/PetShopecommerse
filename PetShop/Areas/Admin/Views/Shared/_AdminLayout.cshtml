@@ -1,11 +1,37 @@
-﻿<!DOCTYPE html>
+@using PetShop.DataContext
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@{
+    var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    PetShop.DataContext.Entites.AdminUser? adminUser = null;
+    if (int.TryParse(userIdStr, out int userId)) {
+        adminUser = DbContext.AdminUsers.AsNoTracking().FirstOrDefault(u => u.Id == userId);
+    }
+    // Always read from DB — never trust cookie's ClaimTypes.Name which may be stale
+    string displayName;
+    if (adminUser != null && !string.IsNullOrWhiteSpace(adminUser.FullName))
+        displayName = adminUser.FullName;
+    else
+        displayName = "Admin";
+    
+    var initials = displayName.Substring(0, 1).ToUpper();
+    var profileImage = adminUser?.ProfileImageUrl;
+
+    // Notifications
+    var recentOrders = DbContext.Orders.OrderByDescending(o => o.CreatedAt).Take(4).ToList();
+    var pendingOrdersCount = DbContext.Orders.Count(o => o.OrderStatus == "Pending");
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="adminHMD professional admin dashboard template">
-    <title>Dashboard | adminHMD</title>
+    <meta name="description" content="PetShop professional admin dashboard template">
+    <title>Dashboard | PetShop Admin</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/admin/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/admin/assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="~/admin/assets/css/style.css">
@@ -17,69 +43,87 @@
 
         <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
             <div class="sidebar-header">
-                <a class="brand-mark" href="index.html" aria-label="adminHMD dashboard">
-                    <span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span>
+                <a class="brand-mark" href="/Admin/Dashboard" aria-label="PetShop dashboard">
+                    <span class="brand-icon"><i class="bi bi-shop" aria-hidden="true"></i></span>
                     <span class="brand-copy">
-                        <span class="brand-title">adminHMD</span>
-                        <span class="brand-subtitle">Admin Template</span>
+                        <span class="brand-title">PetShop</span>
+                        <span class="brand-subtitle">Admin Panel</span>
                     </span>
                 </a>
             </div>
 
             <nav class="sidebar-nav">
-                <a class="nav-link active" href="index.html" aria-current="page">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
                     <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
                     <span class="nav-text">Dashboard</span>
                 </a>
-                <a class="nav-link" href="users.html">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Users" asp-action="Index">
                     <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
                     <span class="nav-text">Users</span>
                 </a>
-                <a class="nav-link" href="add-user.html">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" && ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? "active" : "")" asp-controller="Users" asp-action="Create">
                     <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
                     <span class="nav-text">Add User</span>
                 </a>
-                <a class="nav-link" href="profile.html">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")" asp-controller="Profile" asp-action="Index">
                     <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
                     <span class="nav-text">Profile</span>
                 </a>
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Charts" ? "active" : "")" asp-controller="Charts" asp-action="Index">
                     <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
                     <span class="nav-text">Charts</span>
                 </a>
-                <a class="nav-link" href="tables.html">
-                    <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-                    <span class="nav-text">Tables</span>
+                <div class="nav-item-divider my-2 border-top"></div>
+                <div class="nav-small-cap px-3 text-uppercase text-muted fw-bold" style="font-size:0.75rem; margin-top:10px; margin-bottom:5px;">E-Commerce</div>
+                
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")" asp-controller="Orders" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-cart-check" aria-hidden="true"></i></span>
+                    <span class="nav-text">Orders</span>
                 </a>
-                <a class="nav-link" href="forms.html">
-                    <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-                    <span class="nav-text">Forms</span>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-tags" aria-hidden="true"></i></span>
+                    <span class="nav-text">Categories</span>
                 </a>
-                <a class="nav-link" href="components.html">
-                    <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-                    <span class="nav-text">Components</span>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Brands" ? "active" : "")" asp-controller="Brands" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-award" aria-hidden="true"></i></span>
+                    <span class="nav-text">Brands</span>
                 </a>
-                <a class="nav-link" href="alerts.html">
-                    <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-                    <span class="nav-text">Alerts</span>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Products" ? "active" : "")" asp-controller="Products" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-box-seam" aria-hidden="true"></i></span>
+                    <span class="nav-text">Products</span>
                 </a>
-                <a class="nav-link" href="modals.html">
-                    <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-                    <span class="nav-text">Modals</span>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Coupons" ? "active" : "")" asp-controller="Coupons" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+                    <span class="nav-text">Coupons</span>
                 </a>
-                <a class="nav-link" href="settings.html">
+                
+                <div class="nav-item-divider my-2 border-top"></div>
+                <div class="nav-small-cap px-3 text-uppercase text-muted fw-bold" style="font-size:0.75rem; margin-top:10px; margin-bottom:5px;">Content</div>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Blog" ? "active" : "")" asp-controller="Blog" asp-action="Index">
+                    <span class="nav-icon"><i class="bi bi-journal-text" aria-hidden="true"></i></span>
+                    <span class="nav-text">Blog</span>
+                </a>
+                
+                <div class="nav-item-divider my-2 border-top"></div>
+                <div class="nav-small-cap px-3 text-uppercase text-muted fw-bold" style="font-size:0.75rem; margin-top:10px; margin-bottom:5px;">Settings</div>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")" asp-controller="Settings" asp-action="Index">
                     <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
                     <span class="nav-text">Settings</span>
-                </a>
-                <a class="nav-link" href="blank.html">
-                    <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-                    <span class="nav-text">Blank Page</span>
                 </a>
             </nav>
 
             <div class="sidebar-user">
-                <img class="avatar-img avatar-md sidebar-user-avatar" src="~/admin/assets/images/avatar/avatar.jpg" alt="Admin Hasan">
-                <strong>Admin Hasan</strong>
+                @if (!string.IsNullOrEmpty(profileImage))
+                {
+                    <img class="avatar-img avatar-md sidebar-user-avatar" src="@profileImage" alt="@displayName">
+                }
+                else
+                {
+                    <div class="avatar-img avatar-md sidebar-user-avatar bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-5 rounded-circle">
+                        @initials
+                    </div>
+                }
+                <strong>@displayName</strong>
                 <small>Active Workspace</small>
             </div>
 
@@ -98,8 +142,8 @@
                         <span></span>
                     </button>
 
-                    <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-                        <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
+                    <form action="/Admin/Search" method="get" class="d-none d-md-flex ms-3 flex-grow-1" role="search">
+                        <input class="form-control search-input" type="search" name="query" placeholder="Search users, orders, reports" aria-label="Search" value="@(Context.Request.Query["query"])">
                     </form>
 
                     <div class="navbar-actions ms-auto">
@@ -108,36 +152,69 @@
                         </button>
                         <div class="dropdown">
                             <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                                <span class="notification-dot"></span>
+                                @if (pendingOrdersCount > 0)
+                                {
+                                    <span class="notification-dot"></span>
+                                }
                                 <i class="bi bi-bell" aria-hidden="true"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end notification-menu">
-                                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                                <a class="dropdown-item" href="users.html">
-                                    <span class="notification-title">New user registered</span>
-                                    <span class="notification-time">4 minutes ago</span>
-                                </a>
-                                <a class="dropdown-item" href="charts.html">
-                                    <span class="notification-title">Revenue target reached</span>
-                                    <span class="notification-time">32 minutes ago</span>
-                                </a>
-                                <a class="dropdown-item" href="settings.html">
-                                    <span class="notification-title">Security review completed</span>
-                                    <span class="notification-time">1 hour ago</span>
-                                </a>
+                                <div class="dropdown-header fw-bold text-body">Notifications (@pendingOrdersCount pending)</div>
+                                @if (recentOrders.Any())
+                                {
+                                    foreach (var order in recentOrders)
+                                    {
+                                        var timeSpan = DateTime.UtcNow - order.CreatedAt;
+                                        string timeAgo = timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} mins ago" :
+                                                         timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago" :
+                                                         $"{(int)timeSpan.TotalDays} days ago";
+
+                                        <a class="dropdown-item" href="/Admin/Orders/Edit/@order.Id">
+                                            <span class="notification-title">
+                                                @if(order.OrderStatus == "Pending") { <span class="badge bg-warning me-1">New</span> }
+                                                Order from @order.CustomerName
+                                            </span>
+                                            <span class="notification-time">@timeAgo</span>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="dropdown-item text-muted">No recent notifications</span>
+                                }
+                                <a class="dropdown-item text-center text-primary fw-semibold" href="/Admin/Orders">View All Orders</a>
                             </div>
                         </div>
 
                         <div class="dropdown">
-                            <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img class="avatar-img avatar-sm" src="~/admin/assets/images/avatar/avatar.jpg" alt="Admin Hasan">
-                                <span class="profile-name d-none d-sm-inline">Admin Hasan</span>
+                            <button class="profile-button dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; padding: 0;">
+                                @if (!string.IsNullOrEmpty(profileImage))
+                                {
+                                    <img class="avatar-img avatar-sm rounded-circle" src="@profileImage" style="width: 32px; height: 32px; object-fit: cover;" alt="@displayName">
+                                }
+                                else
+                                {
+                                    <div class="avatar-img avatar-sm bg-primary text-white d-flex align-items-center justify-content-center fw-bold rounded-circle" style="width: 32px; height: 32px; font-size: 14px;">
+                                        @initials
+                                    </div>
+                                }
+                                <span class="profile-name d-none d-sm-inline mb-0">@displayName</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Profile">
+                                        <i class="bi bi-person me-2"></i>Profile
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
+                                <li>
+                                    <form method="post" asp-area="Admin" asp-controller="Account" asp-action="Logout" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-1"></i>Sign out
+                                        </button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -146,7 +223,7 @@
         @RenderBody()
 <footer class="admin-footer">
     <div class="container-fluid px-3 px-lg-4">
-        <span>Copyright 2026 adminHMD. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://github.com/HasanMahmudDev">Md. Hasan Mahmud</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://themewagon.com">ThemeWagon</a> </span>
+        <span>Copyright 2026 PetShop. <br> Developed for PetShop E-commerce </span>
         <span>Professional dashboard template.</span>
     </div>
 </footer>
@@ -155,5 +232,23 @@
 
 <script src="~/admin/assets/js/bootstrap.bundle.min.js"></script>
 <script src="~/admin/assets/js/main.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var sidebar = document.querySelector('.admin-sidebar');
+        if (sidebar) {
+            var scrollPos = localStorage.getItem('sidebarScrollPos');
+            if (scrollPos) {
+                sidebar.scrollTop = parseInt(scrollPos, 10);
+            }
+            
+            sidebar.addEventListener('scroll', function() {
+                localStorage.setItem('sidebarScrollPos', sidebar.scrollTop);
+            });
+        }
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,51 @@
+@model IEnumerable<PetShop.DataContext.Entites.Coupon>
+@{ ViewData["Title"] = "Coupons"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <h1 class="h3 mb-1">Coupons</h1>
+            <a asp-action="Create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Add Coupon</a>
+        </div>
+
+        <section class="panel mt-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Used / Limit</th>
+                        <th>Expiry</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td class="fw-bold">@item.Code</td>
+                            <td>@item.DiscountType</td>
+                            <td>@(item.DiscountType == "Percentage" ? item.DiscountValue + "%" : "$" + item.DiscountValue)</td>
+                            <td>@item.UsedCount / @(item.UsageLimit?.ToString() ?? "∞")</td>
+                            <td>@(item.ExpiryDate?.ToString("yyyy-MM-dd") ?? "Never")</td>
+                            <td>
+                                @if(item.IsActive && (item.ExpiryDate == null || item.ExpiryDate > DateTime.UtcNow) && (item.UsageLimit == null || item.UsedCount < item.UsageLimit)) {
+                                    <span class="badge bg-success">Active</span>
+                                } else {
+                                    <span class="badge bg-danger">Inactive / Expired</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>

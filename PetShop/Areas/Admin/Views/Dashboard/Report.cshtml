@@ -1,0 +1,454 @@
+@model PetShop.Areas.Admin.Models.SalesReportViewModel
+@{
+    ViewData["Title"] = "Sales & Inventory Report";
+}
+
+<main class="dashboard-content report-page">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        
+        <!-- Header & Action Controls (Hidden when printing) -->
+        <div class="page-heading d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div class="page-heading-copy">
+                <span class="page-icon"><i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i></span>
+                <div>
+                    <p class="eyebrow mb-1">Analytics & Reporting</p>
+                    <h1 class="h3 mb-1">Sales & Inventory Summary Report</h1>
+                    <p class="text-muted mb-0">
+                        Period: <strong>@Model.FromDate.ToString("MMM dd, yyyy")</strong> to <strong>@Model.ToDate.ToString("MMM dd, yyyy")</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="heading-actions d-flex flex-wrap align-items-center gap-2 no-print">
+                <a href="/Admin/Dashboard" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Dashboard
+                </a>
+                <a href="/Admin/Dashboard/ExportProducts" class="btn btn-outline-secondary btn-sm" title="Export full product CSV">
+                    <i class="bi bi-download"></i> Export Products
+                </a>
+                <button type="button" onclick="window.print()" class="btn btn-primary btn-sm">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Date Range Filter Bar (Hidden when printing) -->
+        <div class="card border rounded-3 shadow-sm p-3 mb-4 bg-white no-print">
+            <form method="get" action="/Admin/Dashboard/Report" class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label for="filterFrom" class="form-label small fw-semibold text-muted mb-1">From Date</label>
+                    <input type="date" class="form-control form-control-sm" id="filterFrom" name="from" 
+                           value="@Model.FromDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="filterTo" class="form-label small fw-semibold text-muted mb-1">To Date</label>
+                    <input type="date" class="form-control form-control-sm" id="filterTo" name="to" 
+                           value="@Model.ToDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label small fw-semibold text-muted mb-1 d-block">Quick Filter</label>
+                    <div class="btn-group btn-group-sm w-100" role="group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="applyQuickFilter(7)">7D</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="applyQuickFilter(30)">30D</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="applyQuickFilter('month')">Month</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="applyQuickFilter('all')">All</button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="submit" class="btn btn-dark btn-sm w-100">
+                        <i class="bi bi-funnel"></i> Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Print-only Report Header -->
+        <div class="print-header mb-4 d-none">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                <div>
+                    <h2 class="h4 mb-0">PetShop - Sales & Inventory Report</h2>
+                    <small class="text-muted">Generated: @DateTime.UtcNow.ToString("dd MMM yyyy HH:mm") UTC</small>
+                </div>
+                <div class="text-end">
+                    <div class="fw-semibold">Reporting Period:</div>
+                    <small>@Model.FromDate.ToString("yyyy-MM-dd") — @Model.ToDate.ToString("yyyy-MM-dd")</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Metric Cards -->
+        <section class="row g-3 mb-4" aria-label="Key Performance Indicators">
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm">
+                    <div class="text-muted small mb-1"><i class="bi bi-currency-dollar text-success me-1"></i> Revenue</div>
+                    <div class="h4 mb-1 fw-bold text-success">$@Model.TotalRevenue.ToString("N2")</div>
+                    <small class="text-muted">From paid orders</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm">
+                    <div class="text-muted small mb-1"><i class="bi bi-cart-check text-primary me-1"></i> Orders</div>
+                    <div class="h4 mb-1 fw-bold text-dark">@Model.TotalOrders</div>
+                    <small class="text-muted">@Model.PaidOrdersCount Paid / @Model.PendingOrdersCount Pending</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm">
+                    <div class="text-muted small mb-1"><i class="bi bi-cash-stack text-info me-1"></i> Avg Order</div>
+                    <div class="h4 mb-1 fw-bold text-dark">$@Model.AverageOrderValue.ToString("N2")</div>
+                    <small class="text-muted">Per paid order</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm">
+                    <div class="text-muted small mb-1"><i class="bi bi-box text-dark me-1"></i> Products</div>
+                    <div class="h4 mb-1 fw-bold text-dark">@Model.TotalProducts</div>
+                    <small class="text-muted">@Model.CategorySummaries.Count Categories</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm @(Model.OutOfStockCount > 0 ? "border-danger border-opacity-50" : "")">
+                    <div class="text-muted small mb-1"><i class="bi bi-x-circle text-danger me-1"></i> Out of Stock</div>
+                    <div class="h4 mb-1 fw-bold @(Model.OutOfStockCount > 0 ? "text-danger" : "text-dark")">@Model.OutOfStockCount</div>
+                    <small class="text-muted">Needs restocking</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card border rounded-3 p-3 bg-white h-100 shadow-sm @(Model.LowStockCount > 0 ? "border-warning border-opacity-50" : "")">
+                    <div class="text-muted small mb-1"><i class="bi bi-exclamation-triangle text-warning me-1"></i> Low Stock</div>
+                    <div class="h4 mb-1 fw-bold @(Model.LowStockCount > 0 ? "text-warning" : "text-dark")">@Model.LowStockCount</div>
+                    <small class="text-muted">&lt; 5 units in stock</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Category Breakdown & Top Selling -->
+        <div class="row g-4 mb-4">
+            <!-- Category Inventory Summary -->
+            <div class="col-12 col-xl-7">
+                <div class="card border rounded-3 shadow-sm p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-tags text-primary"></i> Inventory by Category
+                        </h2>
+                        <span class="badge bg-light text-dark border">@Model.CategorySummaries.Count categories</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-muted text-uppercase">
+                                    <th>Category</th>
+                                    <th class="text-center">Products</th>
+                                    <th class="text-center">Total Stock</th>
+                                    <th class="text-end">Est. Inventory Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.CategorySummaries.Any())
+                                {
+                                    foreach (var cat in Model.CategorySummaries)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@cat.CategoryName</td>
+                                            <td class="text-center">@cat.ProductCount</td>
+                                            <td class="text-center">
+                                                <span class="badge @(cat.TotalStock == 0 ? "bg-danger" : "bg-light text-dark border")">
+                                                    @cat.TotalStock
+                                                </span>
+                                            </td>
+                                            <td class="text-end fw-medium">$@cat.TotalStockValue.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">No category data found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-group-divider fw-bold">
+                                <tr>
+                                    <td>Total</td>
+                                    <td class="text-center">@Model.TotalProducts</td>
+                                    <td class="text-center">@Model.CategorySummaries.Sum(c => c.TotalStock)</td>
+                                    <td class="text-end text-primary">$@Model.TotalInventoryValue.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Selling Items -->
+            <div class="col-12 col-xl-5">
+                <div class="card border rounded-3 shadow-sm p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-trophy text-warning"></i> Top Selling Products
+                        </h2>
+                        <small class="text-muted">In selected period</small>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-muted text-uppercase">
+                                    <th>Product</th>
+                                    <th class="text-center">Sold</th>
+                                    <th class="text-end">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.TopSellingProducts.Any())
+                                {
+                                    foreach (var item in Model.TopSellingProducts)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold text-truncate" style="max-width: 200px;" title="@item.ProductName">
+                                                    @item.ProductName
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1">
+                                                    @item.QuantitySold
+                                                </span>
+                                            </td>
+                                            <td class="text-end fw-semibold">$@item.TotalRevenue.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">No sales recorded in this period.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Stock Alerts (Out of stock & Low stock) -->
+        <div class="row g-4 mb-4">
+            <!-- Out of Stock List -->
+            <div class="col-12 col-lg-6">
+                <div class="card border rounded-3 shadow-sm p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0 text-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-x-octagon"></i> Out of Stock Alerts (@Model.OutOfStockCount)
+                        </h2>
+                        @if (Model.OutOfStockCount > 0)
+                        {
+                            <span class="badge bg-danger">Critical</span>
+                        }
+                    </div>
+
+                    @if (Model.OutOfStockProducts.Any())
+                    {
+                        <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light small">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OutOfStockProducts)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@item.Name</td>
+                                            <td class="text-muted small">@item.CategoryName</td>
+                                            <td class="text-end fw-medium">$@item.Price.ToString("N2")</td>
+                                            <td class="text-end no-print">
+                                                <a href="/Admin/Products/Edit/@item.Id" class="btn btn-outline-primary btn-xs py-0 px-2" style="font-size: 12px;">Edit</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>All products currently have stock available.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Low Stock List -->
+            <div class="col-12 col-lg-6">
+                <div class="card border rounded-3 shadow-sm p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0 text-warning-emphasis d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle"></i> Low Stock Alerts (@Model.LowStockCount)
+                        </h2>
+                        @if (Model.LowStockCount > 0)
+                        {
+                            <span class="badge bg-warning text-dark">&lt; 5 items left</span>
+                        }
+                    </div>
+
+                    @if (Model.LowStockProducts.Any())
+                    {
+                        <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light small">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th class="text-center">Stock</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.LowStockProducts)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@item.Name</td>
+                                            <td class="text-muted small">@item.CategoryName</td>
+                                            <td class="text-center">
+                                                <span class="badge bg-warning text-dark fw-bold">@item.StockQuantity</span>
+                                            </td>
+                                            <td class="text-end fw-medium">$@item.Price.ToString("N2")</td>
+                                            <td class="text-end no-print">
+                                                <a href="/Admin/Products/Edit/@item.Id" class="btn btn-outline-primary btn-xs py-0 px-2" style="font-size: 12px;">Edit</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>No low stock products found.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Orders Breakdown in Period -->
+        <div class="card border rounded-3 shadow-sm p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt text-primary"></i> Orders Placed in Selected Period (@Model.TotalOrders)
+                </h2>
+                <a href="/Admin/Orders" class="btn btn-outline-secondary btn-sm no-print">All Orders</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="small text-muted text-uppercase">
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end no-print">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrdersInRange.Any())
+                        {
+                            foreach (var order in Model.OrdersInRange)
+                            {
+                                <tr>
+                                    <td><strong class="text-dark">#@order.Id</strong></td>
+                                    <td>
+                                        <div class="fw-medium">@order.CustomerName</div>
+                                        <small class="text-muted">@order.Phone</small>
+                                    </td>
+                                    <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge @(order.PaymentStatus == "Paid" ? "bg-success" : "bg-secondary")">
+                                            @order.PaymentStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(order.OrderStatus == "Delivered" ? "bg-success" : order.OrderStatus == "Pending" ? "bg-warning text-dark" : "bg-info")">
+                                            @order.OrderStatus
+                                        </span>
+                                    </td>
+                                    <td class="text-end fw-bold">$@order.TotalAmount.ToString("N2")</td>
+                                    <td class="text-end no-print">
+                                        <a href="/Admin/Orders/Details/@order.Id" class="btn btn-light btn-sm">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">No orders found within this date range.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<style>
+    @@media print {
+        .admin-sidebar, .sidebar-backdrop, .admin-navbar, .heading-actions, .no-print, .admin-footer {
+            display: none !important;
+        }
+        .admin-shell {
+            display: block !important;
+        }
+        .dashboard-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .print-header {
+            display: block !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+        }
+    }
+</style>
+
+@section Scripts {
+<script>
+    function applyQuickFilter(type) {
+        const today = new Date();
+        let fromDate = new Date();
+
+        if (type === 7) {
+            fromDate.setDate(today.getDate() - 7);
+        } else if (type === 30) {
+            fromDate.setDate(today.getDate() - 30);
+        } else if (type === 'month') {
+            fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        } else if (type === 'all') {
+            fromDate = new Date(2020, 0, 1);
+        }
+
+        document.getElementById('filterTo').value = today.toISOString().split('T')[0];
+        document.getElementById('filterFrom').value = fromDate.toISOString().split('T')[0];
+        document.getElementById('filterFrom').form.submit();
+    }
+</script>
+}

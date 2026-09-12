@@ -1,0 +1,51 @@
+@model IEnumerable<PetShop.DataContext.Entites.BlogPost>
+@{ ViewData["Title"] = "Blog Posts"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <div class="page-heading">
+            <h1 class="h3 mb-1">Blog Posts</h1>
+            <a asp-action="Create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Add Post</a>
+        </div>
+
+        <section class="panel mt-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl)) {
+                                    var imgSrc = item.ImageUrl.StartsWith("/") ? item.ImageUrl : $"/images/{item.ImageUrl}";
+                                    <img src="@imgSrc" style="width: 50px; height: 50px; object-fit: cover;" class="rounded" />
+                                }
+                            </td>
+                            <td>@item.Title</td>
+                            <td>@item.Author</td>
+                            <td>@item.PublishedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                @if(item.IsPublished) { <span class="badge bg-success">Published</span> }
+                                else { <span class="badge bg-secondary">Draft</span> }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Delete?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>

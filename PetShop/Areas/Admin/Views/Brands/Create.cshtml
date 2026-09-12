@@ -1,0 +1,20 @@
+@model PetShop.DataContext.Entites.Brand
+@{ ViewData["Title"] = "Create Brand"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <h1 class="h3 mb-4">Create Brand</h1>
+        <form asp-action="Create" enctype="multipart/form-data" class="panel p-4" style="max-width:600px;">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Brand Name</label>
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Logo</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a asp-action="Index" class="btn btn-light">Cancel</a>
+        </form>
+    </div>
+</main>

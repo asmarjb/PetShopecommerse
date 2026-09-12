@@ -1,0 +1,54 @@
+@model PetShop.DataContext.Entites.Coupon
+@{ ViewData["Title"] = "Edit Coupon"; }
+
+<main class="dashboard-content">
+    <div class="container-fluid px-3 px-lg-4 py-4">
+        <h1 class="h3 mb-4">Edit Coupon</h1>
+        <form asp-action="Edit" class="panel p-4" style="max-width:600px;">
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="Code" class="form-label">Coupon Code</label>
+                <input asp-for="Code" class="form-control" required />
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DiscountType" class="form-label">Discount Type</label>
+                    <select asp-for="DiscountType" class="form-select">
+                        <option value="Percentage">Percentage (%)</option>
+                        <option value="FixedAmount">Fixed Amount ($)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DiscountValue" class="form-label">Discount Value</label>
+                    <input asp-for="DiscountValue" type="number" step="0.01" class="form-control" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MinimumOrderAmount" class="form-label">Minimum Sifariş Məbləği (₼) (Optional)</label>
+                    <input asp-for="MinimumOrderAmount" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MaxDiscountAmount" class="form-label">Maks. Endirim Məbləği (₼) (Optional)</label>
+                    <input asp-for="MaxDiscountAmount" type="number" step="0.01" class="form-control" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="UsageLimit" class="form-label">Usage Limit (Optional)</label>
+                    <input asp-for="UsageLimit" type="number" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ExpiryDate" class="form-label">Expiry Date (Optional)</label>
+                    <input asp-for="ExpiryDate" type="date" class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3 form-check form-switch">
+                <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                <label class="form-check-label" asp-for="IsActive">Is Active</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-light">Cancel</a>
+        </form>
+    </div>
+</main>
